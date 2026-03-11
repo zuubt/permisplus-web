@@ -1,5 +1,5 @@
 import AppShell from '@/components/AppShell'
 
-export default function AccueilLayout({ children }: { children: React.ReactNode }) {
+export default function MapLayout({ children }: { children: React.ReactNode }) {
   return <AppShell>{children}</AppShell>
 }

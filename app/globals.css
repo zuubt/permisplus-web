@@ -3,13 +3,13 @@
 @tailwind utilities;
 
 :root {
-  --background: #F5F5F5;
-  --foreground: #171717;
+  --background: #FAFAFA;
+  --foreground: #202020;
 }
 
 body {
   color: var(--foreground);
-  background: #F5F5F5;
+  background: #FAFAFA;
   font-family: var(--font-inter), sans-serif;
   -webkit-tap-highlight-color: transparent;
 }
@@ -24,5 +24,8 @@ body {
   }
   .safe-bottom {
     padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  }
+  .safe-top {
+    padding-top: max(0.5rem, env(safe-area-inset-top));
   }
 }
