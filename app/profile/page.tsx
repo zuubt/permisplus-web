@@ -52,7 +52,7 @@ export default function ProfilePage() {
   return (
     <div className="min-h-screen px-5 pb-8 pt-8">
       <header className="surface-card rounded-[28px] p-5">
-        <p className="text-sm font-semibold text-text-secondary">Profile</p>
+        <p className="text-sm font-semibold text-text-secondary">Profil</p>
         <div className="mt-4 flex items-center gap-4">
           <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary text-xl font-bold text-white">
             {getInitials(user.name)}
@@ -65,7 +65,7 @@ export default function ProfilePage() {
         </div>
         <div className="mt-5 rounded-[24px] bg-bg p-4">
           <div className="mb-2 flex items-center justify-between">
-            <span className="text-sm font-semibold text-text-primary">XP progress</span>
+            <span className="text-sm font-semibold text-text-primary">Progression XP</span>
             <span className="text-sm text-text-secondary">{xp.current}/{xp.needed}</span>
           </div>
           <div className="h-2 overflow-hidden rounded-full bg-[#ececec]">
@@ -76,10 +76,10 @@ export default function ProfilePage() {
 
       <section className="mt-5 grid grid-cols-2 gap-3">
         {[
-          { label: 'Age', value: user.age ?? 'Not set' },
-          { label: 'Vehicle', value: getVehicleLabel(user.vehicle_type) },
-          { label: 'Coins', value: user.coins },
-          { label: 'Lessons', value: completedLessons },
+          { label: 'Age', value: user.age ?? 'Non renseigne' },
+          { label: 'Vehicule', value: getVehicleLabel(user.vehicle_type) },
+          { label: 'Pieces', value: user.coins },
+          { label: 'Lecons', value: completedLessons },
         ].map(item => (
           <div key={item.label} className="surface-card rounded-[24px] p-4">
             <p className="text-sm text-text-secondary">{item.label}</p>
@@ -98,9 +98,9 @@ export default function ProfilePage() {
           </div>
           <div className="flex-1">
             <p className="font-semibold text-text-primary">Audio</p>
-            <p className="text-sm text-text-secondary">Question and feedback audio play automatically</p>
+            <p className="text-sm text-text-secondary">L'audio des questions et des corrections se lance automatiquement</p>
           </div>
-          <span className="text-sm font-semibold text-text-secondary">{audioMuted ? 'Muted' : 'On'}</span>
+          <span className="text-sm font-semibold text-text-secondary">{audioMuted ? 'Coupe' : 'Active'}</span>
         </button>
 
         <button
@@ -112,9 +112,9 @@ export default function ProfilePage() {
           </div>
           <div className="flex-1">
             <p className="font-semibold text-text-primary">Notifications</p>
-            <p className="text-sm text-text-secondary">Lesson reminders and progress updates</p>
+            <p className="text-sm text-text-secondary">Rappels de lecons et mises a jour de progression</p>
           </div>
-          <span className="text-sm font-semibold text-text-secondary">{notificationsOn ? 'Enabled' : 'Off'}</span>
+          <span className="text-sm font-semibold text-text-secondary">{notificationsOn ? 'Activees' : 'Desactivees'}</span>
         </button>
 
         <button
@@ -125,8 +125,8 @@ export default function ProfilePage() {
             <LogOut size={18} />
           </div>
           <div className="flex-1">
-            <p className="font-semibold">Log out</p>
-            <p className="text-sm text-text-secondary">Clear local progress from this device</p>
+            <p className="font-semibold">Se deconnecter</p>
+            <p className="text-sm text-text-secondary">Effacer la progression locale de cet appareil</p>
           </div>
         </button>
       </section>

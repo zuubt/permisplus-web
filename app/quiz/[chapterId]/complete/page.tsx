@@ -33,12 +33,12 @@ function CompleteContent({ chapterId }: { chapterId: string }) {
         <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-primary-light text-primary">
           <Sparkles size={26} />
         </div>
-        <p className="mt-6 text-sm font-semibold text-text-secondary">Lesson complete</p>
+        <p className="mt-6 text-sm font-semibold text-text-secondary">Lecon terminee</p>
         <h1 className="mt-2 text-3xl font-bold text-text-primary">{chapter?.title}</h1>
         <p className="mt-3 text-sm leading-6 text-text-secondary">
           {percentage >= 80
-            ? 'You completed this lesson successfully and unlocked the next step.'
-            : 'You can improve your score by retaking the missed questions.'}
+            ? 'Vous avez termine cette lecon avec succes et debloque la suite.'
+            : 'Vous pouvez ameliorer votre score en reprenant les questions ratees.'}
         </p>
 
         <div className="mt-6 grid grid-cols-3 gap-3 text-left">
@@ -47,7 +47,7 @@ function CompleteContent({ chapterId }: { chapterId: string }) {
             <p className="mt-2 text-2xl font-bold text-text-primary">{percentage}%</p>
           </div>
           <div className="rounded-[24px] bg-bg p-4">
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-text-secondary">Coins</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-text-secondary">Pieces</p>
             <p className="mt-2 text-2xl font-bold text-text-primary">+{coins}</p>
           </div>
           <div className="rounded-[24px] bg-bg p-4">
@@ -58,7 +58,7 @@ function CompleteContent({ chapterId }: { chapterId: string }) {
 
         {percentage < 80 && (
           <div className="mt-5 rounded-[24px] bg-error-light px-4 py-4 text-left text-sm leading-6 text-error">
-            Lesson completion requires at least 80% accuracy. Retry the lesson to finish it properly.
+            Il faut au moins 80% de bonnes reponses pour valider la lecon. Reessayez pour la terminer correctement.
           </div>
         )}
       </div>
@@ -68,7 +68,7 @@ function CompleteContent({ chapterId }: { chapterId: string }) {
           onClick={() => router.replace(percentage >= 80 ? '/learn' : `/quiz/${chapterId}`)}
           className="flex w-full items-center justify-center gap-2 rounded-2xl bg-primary px-4 py-4 text-base font-semibold text-white"
         >
-          {percentage >= 80 ? 'Continue learning' : 'Retry lesson'}
+          {percentage >= 80 ? 'Continuer' : 'Reprendre la lecon'}
           <ArrowRight size={18} />
         </button>
         <button
@@ -76,7 +76,7 @@ function CompleteContent({ chapterId }: { chapterId: string }) {
           className="flex w-full items-center justify-center gap-2 rounded-2xl border border-border bg-white px-4 py-4 text-base font-semibold text-text-primary"
         >
           <Coins size={18} />
-          View rewards
+          Voir les recompenses
         </button>
       </div>
     </div>

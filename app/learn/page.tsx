@@ -1,6 +1,5 @@
 'use client'
 
-import Image from 'next/image'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
@@ -48,18 +47,18 @@ export default function LearnPage() {
               <ArrowLeft size={18} />
             </button>
             <div>
-              <p className="text-3xl font-semibold tracking-[-0.03em] text-text-primary">Chapter Map</p>
+              <p className="text-3xl font-semibold tracking-[-0.03em] text-text-primary">Parcours</p>
             </div>
           </div>
           <div className="rounded-full bg-accent-light px-3 py-2 text-[11px] font-semibold tracking-[0.18em] text-accent">
-            {user.streak} DAY STREAK
+            SERIE DE {user.streak} JOURS
           </div>
         </div>
 
         <div className="surface-card rounded-[28px] p-5">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-text-secondary">Course Progress</p>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-text-secondary">Progression</p>
           <p className="mt-2 text-xl font-semibold text-text-primary">
-            {Object.values(progress).filter(item => item.completed).length} of {CHAPTERS.length} chapters completed
+            {Object.values(progress).filter(item => item.completed).length} chapitres termines sur {CHAPTERS.length}
           </p>
           <div className="mt-4 h-2 overflow-hidden rounded-full bg-border">
             <div
@@ -69,17 +68,17 @@ export default function LearnPage() {
           </div>
           <div className="mt-3 flex items-center justify-between text-sm">
             <span className="text-text-secondary">
-              Next: {CHAPTERS.find(chapter => !progress[chapter.id]?.completed)?.title ?? 'Mock Exam'}
+              Suivant : {CHAPTERS.find(chapter => !progress[chapter.id]?.completed)?.title ?? 'Examen blanc'}
             </span>
-            <span className="font-semibold text-success">{xp.pct}% XP pace</span>
+            <span className="font-semibold text-success">{xp.pct}% du niveau</span>
           </div>
           <div className="mt-4 grid grid-cols-[1fr_1fr_auto] gap-3">
             <div className="rounded-[20px] bg-bg p-4">
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-text-secondary">Coins</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-text-secondary">Pieces</p>
               <p className="mt-2 text-xl font-semibold text-text-primary">{user.coins}</p>
             </div>
             <div className="rounded-[20px] bg-bg p-4">
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-text-secondary">Level</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-text-secondary">Niveau</p>
               <p className="mt-2 text-xl font-semibold text-text-primary">{user.level}</p>
               <p className="text-xs text-text-secondary">{getLevelTitle(user.level)}</p>
             </div>
@@ -94,9 +93,9 @@ export default function LearnPage() {
       </header>
 
       <section className="mb-4 flex items-center justify-between">
-        <h2 className="text-xl font-semibold text-text-primary">Your Chapters</h2>
+        <h2 className="text-xl font-semibold text-text-primary">Vos chapitres</h2>
         <div className="rounded-full border border-border bg-white px-3 py-1 text-[10px] font-semibold tracking-[0.18em] text-text-secondary">
-          MAP VIEW
+          VUE PARCOURS
         </div>
       </section>
 
@@ -117,14 +116,14 @@ export default function LearnPage() {
             >
               <div className="min-w-0">
                 <p className={`truncate text-base font-medium ${isLocked ? 'text-text-secondary' : 'text-text-primary'}`}>
-                  Chapter {chapter.id} · {chapter.title}
+                  Chapitre {chapter.id} · {chapter.title}
                 </p>
                 <p className="mt-1 text-sm text-text-secondary">{chapter.description}</p>
               </div>
               <div className="ml-4 shrink-0">
-                {isCompleted && <span className="text-[11px] font-semibold tracking-[0.18em] text-success">DONE</span>}
-                {isCurrent && <span className="text-[11px] font-semibold tracking-[0.18em] text-accent">CURRENT</span>}
-                {isLocked && <span className="text-[11px] font-semibold tracking-[0.18em] text-text-disabled">LOCKED</span>}
+                {isCompleted && <span className="text-[11px] font-semibold tracking-[0.18em] text-success">TERMINE</span>}
+                {isCurrent && <span className="text-[11px] font-semibold tracking-[0.18em] text-accent">EN COURS</span>}
+                {isLocked && <span className="text-[11px] font-semibold tracking-[0.18em] text-text-disabled">BLOQUE</span>}
               </div>
             </Link>
           )
@@ -133,7 +132,7 @@ export default function LearnPage() {
 
       <div className="mt-5 flex items-center gap-2 text-sm text-text-secondary">
         <Flame size={16} className="text-primary" />
-        <span>{user.streak} day streak active</span>
+        <span>{user.streak} jours consecutifs actifs</span>
       </div>
     </div>
   )

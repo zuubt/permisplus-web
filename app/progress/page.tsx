@@ -29,7 +29,7 @@ export default function ProgressPage() {
     const averageAccuracy = entries.length
       ? Math.round(entries.reduce((sum, item) => sum + item.best_score, 0) / entries.length)
       : 0
-    const currentChapter = CHAPTERS.find(chapter => !progress[chapter.id]?.completed)?.title ?? 'Mock Exam'
+    const currentChapter = CHAPTERS.find(chapter => !progress[chapter.id]?.completed)?.title ?? 'Examen blanc'
     return { completed, totalAttempts, averageAccuracy, currentChapter }
   }, [progress])
 
@@ -38,19 +38,19 @@ export default function ProgressPage() {
   return (
     <div className="min-h-screen px-5 pb-8 pt-8">
       <header className="surface-card rounded-[28px] p-5">
-        <p className="text-sm font-semibold text-text-secondary">Progress</p>
-        <h1 className="mt-1 text-3xl font-bold text-text-primary">See your learning momentum</h1>
+        <p className="text-sm font-semibold text-text-secondary">Progres</p>
+        <h1 className="mt-1 text-3xl font-bold text-text-primary">Suivez votre progression</h1>
         <p className="mt-3 max-w-[32ch] text-sm leading-6 text-text-secondary">
-          Keep the progress view analytical and simple so learners can understand where they stand at a glance.
+          Une vue simple et claire pour comprendre rapidement vos resultats et vos points a renforcer.
         </p>
       </header>
 
       <section className="mt-5 grid grid-cols-2 gap-3">
         {[
-          { icon: BarChart3, label: 'Lessons completed', value: metrics.completed },
-          { icon: Gauge, label: 'Accuracy', value: `${metrics.averageAccuracy}%` },
-          { icon: Coins, label: 'Total coins', value: user.coins },
-          { icon: TrendingUp, label: 'Current streak', value: `${user.streak} days` },
+          { icon: BarChart3, label: 'Lecons terminees', value: metrics.completed },
+          { icon: Gauge, label: 'Precision', value: `${metrics.averageAccuracy}%` },
+          { icon: Coins, label: 'Total des pieces', value: user.coins },
+          { icon: TrendingUp, label: 'Serie actuelle', value: `${user.streak} jours` },
         ].map(({ icon: Icon, label, value }) => (
           <div key={label} className="surface-card rounded-[24px] p-4">
             <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-bg text-text-secondary">
@@ -68,7 +68,7 @@ export default function ProgressPage() {
             <Target size={20} />
           </div>
           <div>
-            <p className="font-semibold text-text-primary">Current chapter</p>
+            <p className="font-semibold text-text-primary">Chapitre actuel</p>
             <p className="text-sm text-text-secondary">{metrics.currentChapter}</p>
           </div>
         </div>
@@ -92,13 +92,13 @@ export default function ProgressPage() {
       </section>
 
       <section className="surface-card mt-5 rounded-[28px] p-5">
-        <p className="font-semibold text-text-primary">Recent activity</p>
+        <p className="font-semibold text-text-primary">Activite recente</p>
         <div className="mt-4 space-y-3">
           {getTransactions().slice(0, 4).map(item => (
             <div key={item.id} className="flex items-center justify-between rounded-2xl bg-bg px-4 py-3">
               <div>
                 <p className="text-sm font-medium text-text-primary">{item.description}</p>
-                <p className="text-xs text-text-secondary">{new Date(item.created_at).toLocaleDateString('en-GB')}</p>
+                <p className="text-xs text-text-secondary">{new Date(item.created_at).toLocaleDateString('fr-FR')}</p>
               </div>
               <span className={`text-sm font-semibold ${item.amount >= 0 ? 'text-success' : 'text-primary'}`}>
                 {item.amount > 0 ? '+' : ''}

@@ -7,10 +7,10 @@ import { BookOpen, Gift, ChartColumnBig, UserRound, WifiOff } from 'lucide-react
 import { clearSyncQueue, getSyncQueue } from '@/lib/user-store'
 
 const tabs = [
-  { href: '/learn', label: 'Learn', icon: BookOpen },
-  { href: '/rewards', label: 'Rewards', icon: Gift },
-  { href: '/progress', label: 'Progress', icon: ChartColumnBig },
-  { href: '/profile', label: 'Profile', icon: UserRound },
+  { href: '/learn', label: 'Apprendre', icon: BookOpen },
+  { href: '/rewards', label: 'Recompenses', icon: Gift },
+  { href: '/progress', label: 'Progres', icon: ChartColumnBig },
+  { href: '/profile', label: 'Profil', icon: UserRound },
 ]
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
@@ -43,7 +43,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       {!isOnline && (
         <div className="flex items-center gap-2 border-b border-amber-200 bg-amber-50 px-4 py-2 text-xs text-amber-700">
           <WifiOff size={14} />
-          <span>You are offline. Progress will sync when your connection returns.</span>
+          <span>Vous etes hors ligne. La progression se synchronisera au retour de la connexion.</span>
         </div>
       )}
 

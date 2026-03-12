@@ -55,7 +55,7 @@ export default function QuizPage({ params }: { params: Promise<{ chapterId: stri
 
   useEffect(() => {
     if (!currentQuiz || feedback === 'idle') return
-    speak(feedback === 'correct' ? 'Correct answer.' : currentQuiz.explanation)
+    speak(feedback === 'correct' ? 'Bonne reponse.' : currentQuiz.explanation)
     return () => stopSpeech()
   }, [currentQuiz, feedback])
 
@@ -161,14 +161,14 @@ export default function QuizPage({ params }: { params: Promise<{ chapterId: stri
       {showConfirmExit && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-6">
           <div className="w-full max-w-sm rounded-[28px] bg-white p-6 shadow-soft">
-            <h2 className="text-xl font-bold text-text-primary">Leave this lesson?</h2>
-            <p className="mt-2 text-sm leading-6 text-text-secondary">Your current lesson progress will not be saved.</p>
+            <h2 className="text-xl font-bold text-text-primary">Quitter cette lecon ?</h2>
+            <p className="mt-2 text-sm leading-6 text-text-secondary">Votre progression actuelle ne sera pas enregistree.</p>
             <div className="mt-6 grid grid-cols-2 gap-3">
               <button
                 onClick={() => setShowConfirmExit(false)}
                 className="rounded-2xl border border-border px-4 py-3 font-semibold text-text-primary"
               >
-                Stay
+                Rester
               </button>
               <button
                 onClick={() => {
@@ -177,7 +177,7 @@ export default function QuizPage({ params }: { params: Promise<{ chapterId: stri
                 }}
                 className="rounded-2xl bg-primary px-4 py-3 font-semibold text-white"
               >
-                Leave
+                Quitter
               </button>
             </div>
           </div>
@@ -202,11 +202,11 @@ export default function QuizPage({ params }: { params: Promise<{ chapterId: stri
 
         <div className="flex items-center justify-between gap-3">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-text-secondary">Lesson</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-text-secondary">Lecon</p>
             <p className="mt-1 text-base font-semibold text-text-primary">{chapter?.title}</p>
           </div>
           <div className="text-right">
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-text-secondary">Session XP</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-text-secondary">XP session</p>
             <p className="mt-1 text-base font-semibold text-text-primary">+{xpEarned}</p>
           </div>
         </div>
@@ -229,7 +229,7 @@ export default function QuizPage({ params }: { params: Promise<{ chapterId: stri
 
           {currentQuiz.type === 'hazard_detection' && timerLeft !== null && feedback === 'idle' && (
             <div className="mt-4 inline-flex rounded-full bg-primary-light px-3 py-1 text-sm font-semibold text-primary">
-              {timerLeft}s remaining
+              {timerLeft}s restantes
             </div>
           )}
 
@@ -247,7 +247,7 @@ export default function QuizPage({ params }: { params: Promise<{ chapterId: stri
               ) : (
                 <div className="flex min-h-40 items-center justify-center rounded-[20px] border border-border bg-white">
                   <div className="text-center">
-                    <p className="text-sm font-semibold text-text-primary">Image asset placeholder</p>
+                    <p className="text-sm font-semibold text-text-primary">Image en attente</p>
                     <p className="mt-1 text-xs text-text-secondary">assets/{currentQuiz.image_key}.jpg</p>
                   </div>
                 </div>
@@ -355,7 +355,7 @@ export default function QuizPage({ params }: { params: Promise<{ chapterId: stri
             onClick={() => handleConfirm(false)}
             className="w-full rounded-2xl bg-primary px-4 py-4 text-base font-semibold text-white disabled:cursor-not-allowed disabled:bg-[#f0a39c]"
           >
-            Confirm Answer
+            Confirmer la reponse
           </button>
         ) : (
           <div className="space-y-4">
@@ -367,7 +367,7 @@ export default function QuizPage({ params }: { params: Promise<{ chapterId: stri
               <div className="flex items-start gap-3">
                 {feedback === 'correct' ? <CheckCircle2 size={20} /> : <XCircle size={20} />}
                 <div>
-                  <p className="font-semibold">{feedback === 'correct' ? 'Correct answer' : 'Incorrect answer'}</p>
+                  <p className="font-semibold">{feedback === 'correct' ? 'Bonne reponse' : 'Mauvaise reponse'}</p>
                   <p className="mt-1 text-sm leading-6">{currentQuiz.explanation}</p>
                 </div>
               </div>
@@ -377,13 +377,13 @@ export default function QuizPage({ params }: { params: Promise<{ chapterId: stri
                 onClick={() => speak(currentQuiz.explanation)}
                 className="rounded-2xl border border-border px-4 py-4 text-sm font-semibold text-text-primary"
               >
-                Hear Explanation
+                Ecouter l'explication
               </button>
               <button
                 onClick={handleNext}
                 className="rounded-2xl bg-primary px-4 py-4 text-sm font-semibold text-white"
               >
-                {retryQueue.length > 0 && currentIdx + 1 >= quizzes.length ? 'Retry Missed Questions' : 'Next Question'}
+                {retryQueue.length > 0 && currentIdx + 1 >= quizzes.length ? 'Reprendre les questions ratees' : 'Question suivante'}
               </button>
             </div>
           </div>

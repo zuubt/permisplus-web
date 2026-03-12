@@ -30,9 +30,36 @@ All files below were pulled from Wikimedia Commons file endpoints. Verify the ex
   - Source page: [Land Rover Llama dash warning lights](https://commons.wikimedia.org/wiki/File:Land_Rover_Llama_dash_warning_lights.png)
   - Direct file endpoint: `https://commons.wikimedia.org/wiki/Special:FilePath/Land_Rover_Llama_dash_warning_lights.png`
 
+- `engine-warning-light.png`
+  - Source page: [Engine Malfunction Indicator Light](https://commons.wikimedia.org/wiki/File:Engine_Malfunction_Indicator_Light.png)
+  - Direct file endpoint: `https://commons.wikimedia.org/wiki/Special:FilePath/Engine_Malfunction_Indicator_Light.png`
+
+- `oil-warning-light.png`
+  - Source page: [Engine oil](https://commons.wikimedia.org/wiki/File:Engine_oil.png)
+  - Direct file endpoint: `https://commons.wikimedia.org/wiki/Special:FilePath/Engine_oil.png`
+
+- `seatbelt.jpg`
+  - Source page: [Seatbelt](https://commons.wikimedia.org/wiki/File:Seatbelt.jpg)
+  - Direct file endpoint: `https://commons.wikimedia.org/wiki/Special:FilePath/Seatbelt.jpg`
+
+- `reflective-vest.jpg`
+  - Source page: [Reflective protective vest](https://commons.wikimedia.org/wiki/File:Wikipedia-Wikimedia-reflective_protective_vest-01ESD.jpg)
+  - Direct file endpoint: `https://commons.wikimedia.org/wiki/Special:FilePath/Wikipedia-Wikimedia-reflective_protective_vest-01ESD.jpg`
+
+- `spare-wheel.jpg`
+  - Source page: [Bentley Bentayga spare wheel](https://commons.wikimedia.org/wiki/File:Bentley_Bentayga_spare_wheel.jpg)
+  - Direct file endpoint: `https://commons.wikimedia.org/wiki/Special:FilePath/Bentley_Bentayga_spare_wheel.jpg`
+
+- `rearview-mirror.jpg`
+  - Source page: [Rearview Rain](https://commons.wikimedia.org/wiki/File:Rearview_Rain_(Unsplash).jpg)
+  - Direct file endpoint: `https://commons.wikimedia.org/wiki/Special:FilePath/Rearview_Rain_(Unsplash).jpg`
+
+- `first-aid-kit.jpg`
+  - Source page: [A first aid kit](https://commons.wikimedia.org/wiki/File:A-first-aid-kit.jpg)
+  - Direct file endpoint: `https://commons.wikimedia.org/wiki/Special:FilePath/A-first-aid-kit.jpg`
+
 ## Notes
 
 - The current quiz engine uses directly matched assets only.
-- `steering-wheel.jpg` and `warning-triangle.jpg` are mapped into the live quiz/media system now.
-- `gear-lever.jpg`, `car-jack.jpg`, `traffic-cones.jpg`, and `dashboard-lights.png` are available in the library for upcoming quiz/content expansion.
-- Specific engine-oil and engine-warning dashboard icon crops still need a more exact asset pass before replacing those placeholders in active quizzes.
+- The live quiz/media system now maps the chapter 1 and chapter 2 car-part, dashboard-light, and safety-equipment assets directly.
+- `dashboard-lights.png` remains in the library as a broader reference panel, but the active quiz flow now uses exact engine and oil warning images instead of relying on crops.

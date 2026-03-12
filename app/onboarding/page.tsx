@@ -19,9 +19,9 @@ type Step =
 const steps: Step[] = ['welcome', 'phone', 'otp', 'name', 'age', 'vehicle', 'how_it_works']
 
 const vehicles: Array<{ type: VehicleType; label: string; icon: typeof CarFront }> = [
-  { type: 'car', label: 'Car', icon: CarFront },
-  { type: 'motorcycle', label: 'Motorcycle', icon: Bike },
-  { type: 'truck', label: 'Truck', icon: Truck },
+  { type: 'car', label: 'Voiture', icon: CarFront },
+  { type: 'motorcycle', label: 'Moto', icon: Bike },
+  { type: 'truck', label: 'Camion', icon: Truck },
   { type: 'bus', label: 'Bus', icon: Bus },
 ]
 
@@ -74,25 +74,25 @@ export default function OnboardingPage() {
           </div>
           <div>
             <p className="text-sm font-semibold text-text-secondary">PermisPlus</p>
-            <p className="text-xs text-text-disabled">Driving preparation for adult learners</p>
+            <p className="text-xs text-text-disabled">Preparation au permis pour adultes</p>
           </div>
         </div>
 
         <div className="surface-card mb-8 rounded-[28px] p-5">
           <div className="mb-4 flex items-center justify-between">
-            <span className="rounded-full bg-primary-light px-3 py-1 text-xs font-semibold text-primary">Focused learning</span>
+            <span className="rounded-full bg-primary-light px-3 py-1 text-xs font-semibold text-primary">Apprentissage cible</span>
             <ShieldCheck size={18} className="text-text-secondary" />
           </div>
           <div className="grid grid-cols-[1.2fr_0.8fr] gap-3">
             <div className="relative h-44 overflow-hidden rounded-[24px] bg-[#f4f4f5]">
-              <Image src="/assets/driving/pedal-set-1.png" alt="Vehicle pedal set" fill className="object-cover" />
+              <Image src="/assets/driving/pedal-set-1.png" alt="Jeu de pedales" fill className="object-cover" />
             </div>
             <div className="grid gap-3">
               <div className="relative h-[86px] overflow-hidden rounded-[20px] bg-white">
-                <Image src="/assets/driving/clutch-pedal-1.png" alt="Clutch pedal" fill className="object-cover" />
+                <Image src="/assets/driving/clutch-pedal-1.png" alt="Pedale d'embrayage" fill className="object-cover" />
               </div>
               <div className="relative h-[86px] overflow-hidden rounded-[20px] bg-white">
-                <Image src="/assets/driving/brake-pedal-1.png" alt="Brake pedal" fill className="object-cover" />
+                <Image src="/assets/driving/brake-pedal-1.png" alt="Pedale de frein" fill className="object-cover" />
               </div>
             </div>
           </div>
@@ -100,10 +100,10 @@ export default function OnboardingPage() {
 
         <div className="mt-auto">
           <h1 className="max-w-[15ch] text-4xl font-bold leading-tight text-text-primary">
-            Pass your driving license with confidence.
+            Reussissez votre permis de conduire avec confiance.
           </h1>
           <p className="mt-4 max-w-[30ch] text-base leading-7 text-text-secondary">
-            Learn through quizzes, complete lessons, and earn rewards in a focused, mobile-first experience.
+            Apprenez avec des quiz, terminez des lecons et gagnez des recompenses dans une experience mobile, claire et serieuse.
           </p>
         </div>
 
@@ -112,13 +112,13 @@ export default function OnboardingPage() {
             onClick={() => setStep('phone')}
             className="w-full rounded-2xl bg-primary px-4 py-4 text-base font-semibold text-white shadow-card transition-transform active:scale-[0.99]"
           >
-            Get Started
+            Commencer
           </button>
           <button
             onClick={() => setStep('phone')}
             className="w-full rounded-2xl border border-border bg-white px-4 py-4 text-base font-semibold text-text-primary"
           >
-            Log In
+            Se connecter
           </button>
         </div>
       </div>
@@ -139,9 +139,17 @@ export default function OnboardingPage() {
             <div className="h-full rounded-full bg-primary transition-all" style={{ width: `${progress}%` }} />
           </div>
         </div>
-        <div className="flex items-center justify-between">
-          <Image src="/logo.png" alt="PermisPlus logo" width={28} height={28} />
-          <span className="text-xs font-medium text-text-secondary">Step {stepIndex} of {steps.length - 1}</span>
+        <div className="surface-card flex items-center justify-between rounded-[24px] px-4 py-3">
+          <div className="flex items-center gap-3">
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white shadow-card">
+              <Image src="/logo.png" alt="PermisPlus logo" width={30} height={30} className="h-8 w-8 object-contain" />
+            </div>
+            <div>
+              <p className="text-base font-semibold text-text-primary">PermisPlus</p>
+              <p className="text-xs text-text-secondary">Preparation au permis pour adultes</p>
+            </div>
+          </div>
+          <span className="text-xs font-medium text-text-secondary">Etape {stepIndex} sur {steps.length - 1}</span>
         </div>
       </div>
 
@@ -149,12 +157,12 @@ export default function OnboardingPage() {
         {step === 'phone' && (
           <div className="space-y-6">
             <div>
-              <p className="mb-2 text-sm font-semibold text-primary">Account setup</p>
-              <h1 className="text-3xl font-bold text-text-primary">Enter your phone number</h1>
-              <p className="mt-3 text-base leading-7 text-text-secondary">We will send you a verification code.</p>
+              <p className="mb-2 text-sm font-semibold text-primary">Creation du compte</p>
+              <h1 className="text-3xl font-bold text-text-primary">Entrez votre numero de telephone</h1>
+              <p className="mt-3 text-base leading-7 text-text-secondary">Nous allons vous envoyer un code de verification.</p>
             </div>
             <div className="surface-card rounded-[28px] p-5">
-              <label className="mb-2 block text-sm font-semibold text-text-primary">Phone number</label>
+              <label className="mb-2 block text-sm font-semibold text-text-primary">Numero de telephone</label>
               <div className="flex gap-3">
                 <select
                   value={countryCode}
@@ -181,8 +189,8 @@ export default function OnboardingPage() {
           <div className="space-y-6">
             <div>
               <p className="mb-2 text-sm font-semibold text-primary">Verification</p>
-              <h1 className="text-3xl font-bold text-text-primary">Enter the verification code</h1>
-              <p className="mt-3 text-base leading-7 text-text-secondary">We sent a code to {countryCode} {phone || 'your number'}.</p>
+              <h1 className="text-3xl font-bold text-text-primary">Entrez le code de verification</h1>
+              <p className="mt-3 text-base leading-7 text-text-secondary">Nous avons envoye un code au {countryCode} {phone || 'numero saisi'}.</p>
             </div>
             <div className="surface-card rounded-[28px] p-5">
               <div className="grid grid-cols-4 gap-3">
@@ -198,8 +206,8 @@ export default function OnboardingPage() {
                 ))}
               </div>
               <div className="mt-4 flex items-center justify-between text-sm">
-                <button className="font-semibold text-primary">Resend code</button>
-                <span className="text-text-secondary">Demo code: 1234</span>
+                <button className="font-semibold text-primary">Renvoyer le code</button>
+                <span className="text-text-secondary">Code demo : 1234</span>
               </div>
             </div>
           </div>
@@ -208,11 +216,11 @@ export default function OnboardingPage() {
         {step === 'name' && (
           <div className="space-y-6">
             <div>
-              <p className="mb-2 text-sm font-semibold text-primary">Profile</p>
-              <h1 className="text-3xl font-bold text-text-primary">What is your first name?</h1>
+              <p className="mb-2 text-sm font-semibold text-primary">Profil</p>
+              <h1 className="text-3xl font-bold text-text-primary">Quel est votre prenom ?</h1>
             </div>
             <div className="surface-card rounded-[28px] p-5">
-              <label className="mb-2 block text-sm font-semibold text-text-primary">First name</label>
+              <label className="mb-2 block text-sm font-semibold text-text-primary">Prenom</label>
               <input
                 value={name}
                 onChange={event => setName(event.target.value)}
@@ -227,8 +235,8 @@ export default function OnboardingPage() {
         {step === 'age' && (
           <div className="space-y-6">
             <div>
-              <p className="mb-2 text-sm font-semibold text-primary">Profile</p>
-              <h1 className="text-3xl font-bold text-text-primary">How old are you?</h1>
+              <p className="mb-2 text-sm font-semibold text-primary">Profil</p>
+              <h1 className="text-3xl font-bold text-text-primary">Quel age avez-vous ?</h1>
             </div>
             <div className="surface-card rounded-[28px] p-5">
               <label className="mb-2 block text-sm font-semibold text-text-primary">Age</label>
@@ -246,8 +254,8 @@ export default function OnboardingPage() {
         {step === 'vehicle' && (
           <div className="space-y-6">
             <div>
-              <p className="mb-2 text-sm font-semibold text-primary">Learning setup</p>
-              <h1 className="text-3xl font-bold text-text-primary">What type of vehicle are you learning for?</h1>
+              <p className="mb-2 text-sm font-semibold text-primary">Parcours d'apprentissage</p>
+              <h1 className="text-3xl font-bold text-text-primary">Pour quel type de vehicule apprenez-vous ?</h1>
             </div>
             <div className="grid gap-3">
               {vehicles.map(({ type, label, icon: Icon }) => (
@@ -263,7 +271,7 @@ export default function OnboardingPage() {
                   </div>
                   <div className="flex-1">
                     <p className="text-base font-semibold text-text-primary">{label}</p>
-                    <p className="text-sm text-text-secondary">Quiz path adapted for {label.toLowerCase()} learners</p>
+                    <p className="text-sm text-text-secondary">Parcours de quiz adapte aux apprenants en {label.toLowerCase()}</p>
                   </div>
                 </button>
               ))}
@@ -274,25 +282,25 @@ export default function OnboardingPage() {
         {step === 'how_it_works' && (
           <div className="space-y-6">
             <div>
-              <p className="mb-2 text-sm font-semibold text-primary">How it works</p>
-              <h1 className="text-3xl font-bold text-text-primary">PermisPlus keeps learning simple.</h1>
+              <p className="mb-2 text-sm font-semibold text-primary">Fonctionnement</p>
+              <h1 className="text-3xl font-bold text-text-primary">PermisPlus rend l'apprentissage simple.</h1>
             </div>
             <div className="space-y-3">
               {[
                 {
                   icon: BookOpenText,
-                  title: 'Learn with quizzes',
-                  description: 'Answer short quizzes instead of reading long lessons.',
+                  title: 'Apprendre avec des quiz',
+                  description: 'Repondez a de courts quiz au lieu de lire de longues lecons.',
                 },
                 {
                   icon: ShieldCheck,
-                  title: 'Complete lessons',
-                  description: 'Finish quiz sets to unlock new chapters.',
+                  title: 'Terminer les lecons',
+                  description: 'Finissez les series de quiz pour debloquer de nouveaux chapitres.',
                 },
                 {
                   icon: Coins,
-                  title: 'Earn coins',
-                  description: 'Collect coins and redeem them in the reward store.',
+                  title: 'Gagner des pieces',
+                  description: 'Collectez des pieces et echangez-les dans la boutique.',
                 },
               ].map(({ icon: Icon, title, description }) => (
                 <div key={title} className="surface-card flex gap-4 rounded-[24px] p-5">
@@ -317,7 +325,7 @@ export default function OnboardingPage() {
             onClick={() => setStep('otp')}
             className="w-full rounded-2xl bg-primary px-4 py-4 text-base font-semibold text-white disabled:cursor-not-allowed disabled:bg-[#f0a39c]"
           >
-            Continue
+            Continuer
           </button>
         )}
 
@@ -327,7 +335,7 @@ export default function OnboardingPage() {
             onClick={() => setStep('name')}
             className="w-full rounded-2xl bg-primary px-4 py-4 text-base font-semibold text-white disabled:cursor-not-allowed disabled:bg-[#f0a39c]"
           >
-            Verify
+            Verifier
           </button>
         )}
 
@@ -337,7 +345,7 @@ export default function OnboardingPage() {
             onClick={() => setStep('age')}
             className="w-full rounded-2xl bg-primary px-4 py-4 text-base font-semibold text-white disabled:cursor-not-allowed disabled:bg-[#f0a39c]"
           >
-            Continue
+            Continuer
           </button>
         )}
 
@@ -347,7 +355,7 @@ export default function OnboardingPage() {
             onClick={() => setStep('vehicle')}
             className="w-full rounded-2xl bg-primary px-4 py-4 text-base font-semibold text-white disabled:cursor-not-allowed disabled:bg-[#f0a39c]"
           >
-            Continue
+            Continuer
           </button>
         )}
 
@@ -356,7 +364,7 @@ export default function OnboardingPage() {
             onClick={() => setStep('how_it_works')}
             className="w-full rounded-2xl bg-primary px-4 py-4 text-base font-semibold text-white"
           >
-            Continue
+            Continuer
           </button>
         )}
 
@@ -365,7 +373,7 @@ export default function OnboardingPage() {
             onClick={finishOnboarding}
             className="w-full rounded-2xl bg-primary px-4 py-4 text-base font-semibold text-white"
           >
-            Start First Lesson
+            Commencer la premiere lecon
           </button>
         )}
       </div>

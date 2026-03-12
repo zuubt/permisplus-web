@@ -8,8 +8,8 @@ const inter = localFont({
 })
 
 export const metadata: Metadata = {
-  title: 'PermisPlus — Drive with confidence',
-  description: 'Quiz-first driving preparation for focused adult learners.',
+  title: 'PermisPlus - Reussissez votre permis',
+  description: 'Preparation au permis basee sur des quiz, pensee pour des apprenants adultes et mobiles.',
 }
 
 export const viewport: Viewport = {

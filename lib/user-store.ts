@@ -14,11 +14,11 @@ const TX_KEY = 'pp_transactions'
 const SYNC_KEY = 'pp_sync_queue'
 
 export const REWARDS: RewardItem[] = [
-  { id: 'airtime-100', category: 'airtime', title: 'Mobile Airtime', subtitle: '100 FCFA top-up', coin_cost: 120 },
-  { id: 'airtime-250', category: 'airtime', title: 'Mobile Airtime', subtitle: '250 FCFA top-up', coin_cost: 280 },
-  { id: 'data-100', category: 'data', title: 'Data Bundle', subtitle: '100 MB package', coin_cost: 200 },
-  { id: 'coupon-10', category: 'coupon', title: 'Discount Coupon', subtitle: '10% partner coupon', coin_cost: 350 },
-  { id: 'premium-signs', category: 'premium', title: 'Premium Quiz Pack', subtitle: 'Advanced road signs set', coin_cost: 420 },
+  { id: 'airtime-100', category: 'airtime', title: 'Credit mobile', subtitle: 'Recharge de 100 FCFA', coin_cost: 120 },
+  { id: 'airtime-250', category: 'airtime', title: 'Credit mobile', subtitle: 'Recharge de 250 FCFA', coin_cost: 280 },
+  { id: 'data-100', category: 'data', title: 'Forfait internet', subtitle: 'Pack de 100 Mo', coin_cost: 200 },
+  { id: 'coupon-10', category: 'coupon', title: 'Coupon de reduction', subtitle: 'Reduction partenaire de 10%', coin_cost: 350 },
+  { id: 'premium-signs', category: 'premium', title: 'Pack quiz premium', subtitle: 'Serie avancee de panneaux', coin_cost: 420 },
 ]
 
 function ls<T>(key: string, fallback: T): T {
@@ -59,7 +59,7 @@ function normalizeUser(raw: Record<string, unknown>): User {
 
   return {
     id: typeof raw.id === 'string' ? raw.id : generateId(),
-    name: typeof raw.name === 'string' ? raw.name : 'Learner',
+    name: typeof raw.name === 'string' ? raw.name : 'Apprenant',
     phone: typeof raw.phone === 'string' ? raw.phone : '',
     country_code: typeof raw.country_code === 'string' ? raw.country_code : '+228',
     age,
@@ -107,7 +107,7 @@ export function createUser(params: {
   const now = new Date().toISOString()
   const user: User = {
     id: generateId(),
-    name: params.name.trim() || 'Learner',
+    name: params.name.trim() || 'Apprenant',
     phone: params.phone,
     country_code: params.country_code ?? '+228',
     age: params.age,
@@ -249,7 +249,7 @@ export function saveChapterResult(
   lsSet(PROGRESS_KEY, all)
 
   addXp(xpEarned)
-  addCoins(coinsEarned, 'earned', `Lesson ${chapterId} completed`)
+  addCoins(coinsEarned, 'earned', `Lecon ${chapterId} terminee`)
   addToSyncQueue({
     table: 'user_chapter_progress',
     data: { ...all[chapterId], user_id: user.id },

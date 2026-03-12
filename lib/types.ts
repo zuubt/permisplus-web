@@ -92,26 +92,26 @@ export interface RewardItem {
 }
 
 export const LEVEL_TITLES: Record<string, string> = {
-  '1': 'Starter',
-  '6': 'Learner',
-  '16': 'Confident',
-  '31': 'Advanced',
-  '46': 'Road Ready',
+  '1': 'Debutant',
+  '6': 'Apprenant',
+  '16': 'Confiant',
+  '31': 'Avance',
+  '46': 'Pret pour la route',
 }
 
 export function getLevelTitle(level: number): string {
-  if (level >= 46) return 'Road Ready'
-  if (level >= 31) return 'Advanced'
-  if (level >= 16) return 'Confident'
-  if (level >= 6) return 'Learner'
-  return 'Starter'
+  if (level >= 46) return 'Pret pour la route'
+  if (level >= 31) return 'Avance'
+  if (level >= 16) return 'Confiant'
+  if (level >= 6) return 'Apprenant'
+  return 'Debutant'
 }
 
 export function getVehicleLabel(type: VehicleType): string {
-  if (type === 'motorcycle') return 'Motorcycle'
-  if (type === 'truck') return 'Truck'
+  if (type === 'motorcycle') return 'Moto'
+  if (type === 'truck') return 'Camion'
   if (type === 'bus') return 'Bus'
-  return 'Car'
+  return 'Voiture'
 }
 
 export function getXpForLevel(level: number): number {

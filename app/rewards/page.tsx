@@ -7,9 +7,9 @@ import { REWARDS, getTransactions, getUser, spendCoins } from '@/lib/user-store'
 import { RewardItem, User } from '@/lib/types'
 
 const filters: Array<{ key: RewardItem['category'] | 'all'; label: string }> = [
-  { key: 'all', label: 'All' },
-  { key: 'airtime', label: 'Airtime' },
-  { key: 'data', label: 'Data' },
+  { key: 'all', label: 'Tout' },
+  { key: 'airtime', label: 'Credit' },
+  { key: 'data', label: 'Internet' },
   { key: 'coupon', label: 'Coupons' },
   { key: 'premium', label: 'Premium' },
 ]
@@ -38,19 +38,19 @@ export default function RewardsPage() {
   function handleRedeem(item: RewardItem) {
     if (!user) return
     if (user.coins < item.coin_cost) return
-    const updated = spendCoins(item.coin_cost, `Redeemed ${item.title}`)
+    const updated = spendCoins(item.coin_cost, `Recompense echangee : ${item.title}`)
     if (updated) setUser(updated)
   }
 
   return (
     <div className="min-h-screen px-5 pb-8 pt-8">
       <header className="surface-card rounded-[28px] p-5">
-        <p className="text-sm font-semibold text-text-secondary">Rewards</p>
-        <h1 className="mt-1 text-3xl font-bold text-text-primary">Use coins for practical rewards</h1>
+        <p className="text-sm font-semibold text-text-secondary">Recompenses</p>
+        <h1 className="mt-1 text-3xl font-bold text-text-primary">Utilisez vos pieces pour des recompenses utiles</h1>
         <div className="mt-5 flex items-center justify-between rounded-[24px] bg-bg p-4">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-text-secondary">Available balance</p>
-            <p className="mt-2 text-2xl font-bold text-text-primary">{user.coins} coins</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-text-secondary">Solde disponible</p>
+            <p className="mt-2 text-2xl font-bold text-text-primary">{user.coins} pieces</p>
           </div>
           <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-accent-light text-accent">
             <Coins size={24} />
@@ -89,15 +89,15 @@ export default function RewardsPage() {
               </div>
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-text-secondary">Cost</p>
-                  <p className="mt-1 text-lg font-bold text-text-primary">{item.coin_cost} coins</p>
+                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-text-secondary">Cout</p>
+                  <p className="mt-1 text-lg font-bold text-text-primary">{item.coin_cost} pieces</p>
                 </div>
                 <button
                   disabled={!canRedeem}
                   onClick={() => handleRedeem(item)}
                   className="rounded-2xl bg-primary px-4 py-3 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:bg-[#f0a39c]"
                 >
-                  Redeem
+                  Echanger
                 </button>
               </div>
             </div>
@@ -111,8 +111,8 @@ export default function RewardsPage() {
             <PackageOpen size={20} />
           </div>
           <div>
-            <p className="font-semibold text-text-primary">Recent redemptions</p>
-            <p className="text-sm text-text-secondary">Keep rewards practical and easy to understand.</p>
+            <p className="font-semibold text-text-primary">Echanges recents</p>
+            <p className="text-sm text-text-secondary">Des recompenses simples, concretes et faciles a comprendre.</p>
           </div>
         </div>
         <div className="mt-4 space-y-3">
@@ -122,7 +122,7 @@ export default function RewardsPage() {
             .map(item => (
               <div key={item.id} className="rounded-2xl bg-bg px-4 py-3">
                 <p className="text-sm font-semibold text-text-primary">{item.description}</p>
-                <p className="text-xs text-text-secondary">{new Date(item.created_at).toLocaleDateString('en-GB')}</p>
+                <p className="text-xs text-text-secondary">{new Date(item.created_at).toLocaleDateString('fr-FR')}</p>
               </div>
             ))}
         </div>
