@@ -1,9 +1,11 @@
 'use client'
 
+import Image from 'next/image'
 import { use, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { ArrowLeft, CheckCircle2, ChevronDown, ChevronUp, RotateCcw, Volume2, XCircle } from 'lucide-react'
 import { CHAPTERS, getChapterQuizzes, shuffleArray } from '@/lib/quiz-data'
+import { getQuizPhotoAsset } from '@/lib/media-assets'
 import { QuizOption, QuizQuestion } from '@/lib/types'
 import { speak, stopSpeech } from '@/lib/audio'
 
@@ -233,12 +235,23 @@ export default function QuizPage({ params }: { params: Promise<{ chapterId: stri
 
           {currentQuiz.image_key && (
             <div className="mt-5 rounded-[24px] border border-dashed border-border bg-bg p-5">
-              <div className="flex min-h-40 items-center justify-center rounded-[20px] border border-border bg-white">
-                <div className="text-center">
-                  <p className="text-sm font-semibold text-text-primary">Image asset placeholder</p>
-                  <p className="mt-1 text-xs text-text-secondary">assets/{currentQuiz.image_key}.jpg</p>
+              {getQuizPhotoAsset(currentQuiz.image_key) ? (
+                <div className="relative min-h-40 overflow-hidden rounded-[20px] border border-border bg-white">
+                  <Image
+                    src={getQuizPhotoAsset(currentQuiz.image_key)!}
+                    alt={currentQuiz.question}
+                    fill
+                    className="object-cover"
+                  />
                 </div>
-              </div>
+              ) : (
+                <div className="flex min-h-40 items-center justify-center rounded-[20px] border border-border bg-white">
+                  <div className="text-center">
+                    <p className="text-sm font-semibold text-text-primary">Image asset placeholder</p>
+                    <p className="mt-1 text-xs text-text-secondary">assets/{currentQuiz.image_key}.jpg</p>
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
@@ -270,10 +283,26 @@ export default function QuizPage({ params }: { params: Promise<{ chapterId: stri
                         getOptionCardClass({ selected, correct, showState })
                       }`}
                     >
-                      <div className="rounded-2xl border border-dashed border-border bg-white px-3 py-6 text-center">
-                        <p className="text-sm font-semibold text-text-primary">{option.text}</p>
-                        <p className="mt-1 text-xs text-text-secondary">assets/{option.image_key}.jpg</p>
-                      </div>
+                      {getQuizPhotoAsset(option.image_key) ? (
+                        <div className="overflow-hidden rounded-2xl border border-border bg-white">
+                          <div className="relative h-28">
+                            <Image
+                              src={getQuizPhotoAsset(option.image_key)!}
+                              alt={option.text ?? 'Quiz option'}
+                              fill
+                              className="object-cover"
+                            />
+                          </div>
+                          <div className="px-3 py-3 text-center">
+                            <p className="text-sm font-semibold text-text-primary">{option.text}</p>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="rounded-2xl border border-dashed border-border bg-white px-3 py-6 text-center">
+                          <p className="text-sm font-semibold text-text-primary">{option.text}</p>
+                          <p className="mt-1 text-xs text-text-secondary">assets/{option.image_key}.jpg</p>
+                        </div>
+                      )}
                     </button>
                   )
                 })}

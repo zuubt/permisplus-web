@@ -4,7 +4,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Check, Flame, Lock, Volume2, VolumeX } from 'lucide-react'
+import { ArrowLeft, Check, Flame, Lock, Volume2, VolumeX } from 'lucide-react'
 import { CHAPTERS } from '@/lib/quiz-data'
 import { ChapterProgress, User, getLevelTitle } from '@/lib/types'
 import { checkAndUpdateStreak, getAllChapterProgress, getUser, getXpProgress } from '@/lib/user-store'
@@ -41,70 +41,67 @@ export default function LearnPage() {
 
   return (
     <div className="min-h-screen px-5 pb-8 pt-8">
-      <header className="mb-6 rounded-[28px] border border-border bg-white px-5 py-5 shadow-card">
-        <div className="mb-5 flex items-start justify-between gap-4">
+      <header className="mb-6">
+        <div className="mb-5 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="surface-card flex h-12 w-12 items-center justify-center rounded-2xl">
-              <Image src="/logo.png" alt="PermisPlus logo" width={28} height={28} />
-            </div>
+            <button className="flex h-11 w-11 items-center justify-center rounded-full border border-border bg-white text-text-primary shadow-card">
+              <ArrowLeft size={18} />
+            </button>
             <div>
-              <p className="text-sm font-semibold text-text-secondary">PermisPlus</p>
-              <h1 className="text-2xl font-bold text-text-primary">Learn</h1>
+              <p className="text-3xl font-semibold tracking-[-0.03em] text-text-primary">Chapter Map</p>
             </div>
           </div>
-          <button
-            onClick={() => setMuted(toggleMuted())}
-            className="flex h-11 w-11 items-center justify-center rounded-full border border-border bg-bg text-text-secondary"
-          >
-            {muted ? <VolumeX size={18} /> : <Volume2 size={18} />}
-          </button>
-        </div>
-
-        <div className="grid grid-cols-2 gap-3">
-          <div className="rounded-3xl bg-bg p-4">
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-text-secondary">Coins</p>
-            <p className="mt-2 text-2xl font-bold text-text-primary">{user.coins}</p>
-          </div>
-          <div className="rounded-3xl bg-bg p-4">
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-text-secondary">Level</p>
-            <p className="mt-2 text-2xl font-bold text-text-primary">{user.level}</p>
-            <p className="text-xs text-text-secondary">{getLevelTitle(user.level)}</p>
+          <div className="rounded-full bg-accent-light px-3 py-2 text-[11px] font-semibold tracking-[0.18em] text-accent">
+            {user.streak} DAY STREAK
           </div>
         </div>
 
-        <div className="mt-4 rounded-3xl bg-bg p-4">
-          <div className="mb-2 flex items-center justify-between">
-            <p className="text-sm font-semibold text-text-primary">XP progress</p>
-            <p className="text-sm text-text-secondary">{xp.current}/{xp.needed}</p>
+        <div className="surface-card rounded-[28px] p-5">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-text-secondary">Course Progress</p>
+          <p className="mt-2 text-xl font-semibold text-text-primary">
+            {Object.values(progress).filter(item => item.completed).length} of {CHAPTERS.length} chapters completed
+          </p>
+          <div className="mt-4 h-2 overflow-hidden rounded-full bg-border">
+            <div
+              className="h-full rounded-full bg-success"
+              style={{ width: `${Math.round((Object.values(progress).filter(item => item.completed).length / CHAPTERS.length) * 100)}%` }}
+            />
           </div>
-          <div className="h-2 overflow-hidden rounded-full bg-[#ececec]">
-            <div className="h-full rounded-full bg-primary" style={{ width: `${xp.pct}%` }} />
+          <div className="mt-3 flex items-center justify-between text-sm">
+            <span className="text-text-secondary">
+              Next: {CHAPTERS.find(chapter => !progress[chapter.id]?.completed)?.title ?? 'Mock Exam'}
+            </span>
+            <span className="font-semibold text-success">{xp.pct}% XP pace</span>
           </div>
-        </div>
-
-        <div className="mt-4 flex items-center gap-2 text-sm text-text-secondary">
-          <Flame size={16} className="text-primary" />
-          <span>{user.streak} day streak</span>
+          <div className="mt-4 grid grid-cols-[1fr_1fr_auto] gap-3">
+            <div className="rounded-[20px] bg-bg p-4">
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-text-secondary">Coins</p>
+              <p className="mt-2 text-xl font-semibold text-text-primary">{user.coins}</p>
+            </div>
+            <div className="rounded-[20px] bg-bg p-4">
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-text-secondary">Level</p>
+              <p className="mt-2 text-xl font-semibold text-text-primary">{user.level}</p>
+              <p className="text-xs text-text-secondary">{getLevelTitle(user.level)}</p>
+            </div>
+            <button
+              onClick={() => setMuted(toggleMuted())}
+              className="flex w-14 items-center justify-center rounded-[20px] bg-bg text-text-secondary"
+            >
+              {muted ? <VolumeX size={18} /> : <Volume2 size={18} />}
+            </button>
+          </div>
         </div>
       </header>
 
-      <section className="mb-5 rounded-[28px] border border-border bg-white p-5 shadow-card">
-        <div className="mb-3 flex items-center justify-between">
-          <div>
-            <p className="text-sm font-semibold text-text-secondary">Current focus</p>
-            <h2 className="text-xl font-bold text-text-primary">Structured lesson path</h2>
-          </div>
-          <div className="rounded-full bg-primary-light px-3 py-1 text-xs font-semibold text-primary">
-            80% to complete
-          </div>
+      <section className="mb-4 flex items-center justify-between">
+        <h2 className="text-xl font-semibold text-text-primary">Your Chapters</h2>
+        <div className="rounded-full border border-border bg-white px-3 py-1 text-[10px] font-semibold tracking-[0.18em] text-text-secondary">
+          MAP VIEW
         </div>
-        <p className="text-sm leading-6 text-text-secondary">
-          Complete lessons in order. Missed questions come back before a lesson is marked complete.
-        </p>
       </section>
 
       <div className="space-y-4">
-        {CHAPTERS.map((chapter, index) => {
+        {CHAPTERS.map(chapter => {
           const state = chapterState(chapter.id)
           const itemProgress = progress[chapter.id]
           const isLocked = state === 'locked'
@@ -112,44 +109,31 @@ export default function LearnPage() {
           const isCurrent = state === 'current'
 
           return (
-            <div key={chapter.id} className="relative">
-              {index < CHAPTERS.length - 1 && (
-                <div className={`absolute left-[23px] top-[72px] h-10 w-px ${isCompleted ? 'bg-[#bcbcbc]' : 'bg-border'}`} />
-              )}
-              <Link
-                href={isLocked ? '#' : `/quiz/${chapter.id}`}
-                onClick={event => isLocked && event.preventDefault()}
-                className={`flex gap-4 rounded-[28px] border bg-white p-4 shadow-card transition-colors ${
-                  isCurrent ? 'border-primary' : 'border-border'
-                } ${isLocked ? 'opacity-70' : ''}`}
-              >
-                <div
-                  className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-full border ${
-                    isCompleted
-                      ? 'border-[#d1d5db] bg-[#f3f4f6] text-text-primary'
-                      : isCurrent
-                      ? 'border-primary bg-primary text-white'
-                      : 'border-border bg-bg text-text-disabled'
-                  }`}
-                >
-                  {isCompleted ? <Check size={20} /> : isLocked ? <Lock size={18} /> : <span className="font-semibold">{chapter.id}</span>}
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div className="mb-1 flex items-center justify-between gap-3">
-                    <p className="truncate text-base font-semibold text-text-primary">{chapter.title}</p>
-                    <span className="text-xs font-medium text-text-secondary">{chapter.quiz_count} quizzes</span>
-                  </div>
-                  <p className="text-sm leading-6 text-text-secondary">{chapter.description}</p>
-                  <div className="mt-3 flex items-center gap-3 text-xs text-text-secondary">
-                    {isCompleted && <span>Completed at {itemProgress?.best_score}%</span>}
-                    {isCurrent && <span className="font-semibold text-primary">Current lesson</span>}
-                    {isLocked && <span>Unlock previous lesson first</span>}
-                  </div>
-                </div>
-              </Link>
-            </div>
+            <Link
+              key={chapter.id}
+              href={isLocked ? '#' : `/quiz/${chapter.id}`}
+              onClick={event => isLocked && event.preventDefault()}
+              className="surface-card flex items-center justify-between rounded-[24px] px-4 py-4"
+            >
+              <div className="min-w-0">
+                <p className={`truncate text-base font-medium ${isLocked ? 'text-text-secondary' : 'text-text-primary'}`}>
+                  Chapter {chapter.id} · {chapter.title}
+                </p>
+                <p className="mt-1 text-sm text-text-secondary">{chapter.description}</p>
+              </div>
+              <div className="ml-4 shrink-0">
+                {isCompleted && <span className="text-[11px] font-semibold tracking-[0.18em] text-success">DONE</span>}
+                {isCurrent && <span className="text-[11px] font-semibold tracking-[0.18em] text-accent">CURRENT</span>}
+                {isLocked && <span className="text-[11px] font-semibold tracking-[0.18em] text-text-disabled">LOCKED</span>}
+              </div>
+            </Link>
           )
         })}
+      </div>
+
+      <div className="mt-5 flex items-center gap-2 text-sm text-text-secondary">
+        <Flame size={16} className="text-primary" />
+        <span>{user.streak} day streak active</span>
       </div>
     </div>
   )

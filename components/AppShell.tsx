@@ -50,28 +50,28 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       <main className="flex-1 overflow-y-auto pb-24">{children}</main>
 
       <nav className="safe-bottom fixed bottom-0 left-1/2 z-50 w-full max-w-[430px] -translate-x-1/2 border-t border-border bg-white/95 backdrop-blur">
-        <div className="grid grid-cols-4">
+        <div className="px-5 pb-2 pt-3">
+          <div className="grid grid-cols-4 rounded-[28px] border border-border bg-white p-1 shadow-card">
           {tabs.map(({ href, label, icon: Icon }) => {
             const active = pathname === href || pathname.startsWith(`${href}/`)
             return (
               <Link
                 key={href}
                 href={href}
-                className="flex flex-col items-center gap-1 px-2 py-3 text-center"
+                className={`flex flex-col items-center gap-1 rounded-[24px] px-2 py-3 text-center transition-colors ${
+                  active ? 'bg-primary text-white' : 'text-text-secondary'
+                }`}
               >
-                <div
-                  className={`rounded-2xl px-3 py-2 transition-colors ${
-                    active ? 'bg-primary-light text-primary' : 'text-text-secondary'
-                  }`}
-                >
+                <div className={`${active ? 'text-white' : 'text-text-secondary'}`}>
                   <Icon size={18} strokeWidth={active ? 2.4 : 2} />
                 </div>
-                <span className={`text-[11px] font-semibold ${active ? 'text-text-primary' : 'text-text-secondary'}`}>
+                <span className={`text-[10px] font-semibold tracking-[0.18em] ${active ? 'text-white' : 'text-text-secondary'}`}>
                   {label}
                 </span>
               </Link>
             )
           })}
+          </div>
         </div>
       </nav>
     </div>

@@ -83,14 +83,18 @@ export default function OnboardingPage() {
             <span className="rounded-full bg-primary-light px-3 py-1 text-xs font-semibold text-primary">Focused learning</span>
             <ShieldCheck size={18} className="text-text-secondary" />
           </div>
-          <div className="relative overflow-hidden rounded-[24px] border border-border bg-[#f4f4f5] p-6">
-            <div className="mb-4 flex h-40 items-center justify-center rounded-[20px] border border-dashed border-border bg-white">
-              <div className="text-center">
-                <p className="text-sm font-semibold text-text-primary">Driving hero image placeholder</p>
-                <p className="mt-1 text-xs text-text-secondary">Expected asset: `assets/onboarding/driving-hero.jpg`</p>
+          <div className="grid grid-cols-[1.2fr_0.8fr] gap-3">
+            <div className="relative h-44 overflow-hidden rounded-[24px] bg-[#f4f4f5]">
+              <Image src="/assets/driving/pedal-set-1.png" alt="Vehicle pedal set" fill className="object-cover" />
+            </div>
+            <div className="grid gap-3">
+              <div className="relative h-[86px] overflow-hidden rounded-[20px] bg-white">
+                <Image src="/assets/driving/clutch-pedal-1.png" alt="Clutch pedal" fill className="object-cover" />
+              </div>
+              <div className="relative h-[86px] overflow-hidden rounded-[20px] bg-white">
+                <Image src="/assets/driving/brake-pedal-1.png" alt="Brake pedal" fill className="object-cover" />
               </div>
             </div>
-            <p className="text-xs text-text-secondary">Use a real driving-related photo here when the final asset is available.</p>
           </div>
         </div>
 
