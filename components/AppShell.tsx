@@ -3,14 +3,14 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Map, Dumbbell, Trophy, User, WifiOff } from 'lucide-react'
-import { getSyncQueue, clearSyncQueue } from '@/lib/user-store'
+import { BookOpen, Gift, ChartColumnBig, UserRound, WifiOff } from 'lucide-react'
+import { clearSyncQueue, getSyncQueue } from '@/lib/user-store'
 
 const tabs = [
-  { href: '/map', label: 'Parcours', icon: Map },
-  { href: '/practice', label: 'Pratique', icon: Dumbbell },
-  { href: '/ranks', label: 'Classement', icon: Trophy },
-  { href: '/profile', label: 'Profil', icon: User },
+  { href: '/learn', label: 'Learn', icon: BookOpen },
+  { href: '/rewards', label: 'Rewards', icon: Gift },
+  { href: '/progress', label: 'Progress', icon: ChartColumnBig },
+  { href: '/profile', label: 'Profile', icon: UserRound },
 ]
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
@@ -22,12 +22,8 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
 
     function handleOnline() {
       setIsOnline(true)
-      // Flush sync queue when back online
       const queue = getSyncQueue()
-      if (queue.length > 0) {
-        // In a real app, upsert to Supabase here
-        clearSyncQueue()
-      }
+      if (queue.length > 0) clearSyncQueue()
     }
 
     function handleOffline() {
@@ -43,30 +39,36 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   }, [])
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex min-h-screen flex-col">
       {!isOnline && (
-        <div className="bg-amber-50 border-b border-amber-200 px-4 py-2 flex items-center gap-2 text-amber-700 text-xs z-50">
+        <div className="flex items-center gap-2 border-b border-amber-200 bg-amber-50 px-4 py-2 text-xs text-amber-700">
           <WifiOff size={14} />
-          <span>Mode hors ligne — vos progrès seront synchronisés</span>
+          <span>You are offline. Progress will sync when your connection returns.</span>
         </div>
       )}
-      <main className="flex-1 pb-20 overflow-y-auto">
-        {children}
-      </main>
-      <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white border-t border-border safe-bottom z-50">
-        <div className="flex">
+
+      <main className="flex-1 overflow-y-auto pb-24">{children}</main>
+
+      <nav className="safe-bottom fixed bottom-0 left-1/2 z-50 w-full max-w-[430px] -translate-x-1/2 border-t border-border bg-white/95 backdrop-blur">
+        <div className="grid grid-cols-4">
           {tabs.map(({ href, label, icon: Icon }) => {
-            const active = pathname === href || pathname.startsWith(href + '/')
+            const active = pathname === href || pathname.startsWith(`${href}/`)
             return (
               <Link
                 key={href}
                 href={href}
-                className={`flex-1 flex flex-col items-center py-2.5 gap-1 transition-colors ${
-                  active ? 'text-primary' : 'text-text-disabled'
-                }`}
+                className="flex flex-col items-center gap-1 px-2 py-3 text-center"
               >
-                <Icon size={22} strokeWidth={active ? 2.5 : 1.8} />
-                <span className="text-[10px] font-semibold">{label}</span>
+                <div
+                  className={`rounded-2xl px-3 py-2 transition-colors ${
+                    active ? 'bg-primary-light text-primary' : 'text-text-secondary'
+                  }`}
+                >
+                  <Icon size={18} strokeWidth={active ? 2.4 : 2} />
+                </div>
+                <span className={`text-[11px] font-semibold ${active ? 'text-text-primary' : 'text-text-secondary'}`}>
+                  {label}
+                </span>
               </Link>
             )
           })}

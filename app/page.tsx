@@ -9,16 +9,16 @@ export default function RootRedirect() {
 
   useEffect(() => {
     const user = getUser()
-    if (user && user.completed_onboarding) {
-      router.replace('/map')
+    if (user?.completed_onboarding) {
+      router.replace('/learn')
     } else {
       router.replace('/onboarding')
     }
   }, [router])
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-bg">
-      <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+    <div className="flex min-h-screen items-center justify-center bg-bg">
+      <div className="h-10 w-10 animate-spin rounded-full border-4 border-primary border-t-transparent" />
     </div>
   )
 }

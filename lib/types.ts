@@ -1,5 +1,5 @@
-export type AgeRange = '16-18' | '18-25' | '25-35' | '35+'
-export type VehicleType = 'car' | 'motorcycle' | 'truck'
+export type VehicleType = 'car' | 'motorcycle' | 'truck' | 'bus'
+
 export type QuizType =
   | 'image_selection'
   | 'object_id'
@@ -14,27 +14,23 @@ export interface User {
   id: string
   name: string
   phone: string
-  age_range: AgeRange
+  country_code: string
+  age: number | null
   vehicle_type: VehicleType
-  avatar_initial: string
   coins: number
   xp: number
   level: number
   streak: number
   last_active_date: string | null
   completed_onboarding: boolean
-  referral_code: string
-  referred_by: string | null
   daily_coin_earned: number
   daily_coin_date: string | null
-  is_guest: boolean
   created_at: string
 }
 
 export interface Chapter {
   id: number
   title: string
-  emoji: string
   description: string
   quiz_count: number
   is_free: boolean
@@ -43,7 +39,7 @@ export interface Chapter {
 export interface ChapterProgress {
   chapter_id: number
   completed: boolean
-  best_score: number  // 0–100
+  best_score: number
   stars: 0 | 1 | 2 | 3
   attempts: number
   last_attempt_at: string | null
@@ -52,8 +48,8 @@ export interface ChapterProgress {
 export interface QuizOption {
   id: string
   text?: string
-  image_key?: string  // key into public images map
-  label?: string      // A, B, C, D
+  image_key?: string
+  label?: string
 }
 
 export interface QuizQuestion {
@@ -62,18 +58,15 @@ export interface QuizQuestion {
   type: QuizType
   question: string
   options: QuizOption[]
-  correct_ids: string[]   // IDs of correct options (1 or more)
+  correct_ids: string[]
   explanation: string
   difficulty: 'easy' | 'medium' | 'hard'
-  image_key?: string      // for object_id, hazard_detection, sign_recognition
-  // for step_ordering: options are the steps, correct_ids is the ordered list
-  // for word_image: options has both words and images, correct_ids are pairs encoded as "wordId:imageId"
-  // for true_false: options are ['true','false'], correct_ids is ['true'] or ['false']
+  image_key?: string
 }
 
 export interface QuizSessionResult {
   chapter_id: number
-  answers: Record<string, string[]>  // questionId -> selected option ids
+  answers: Record<string, string[]>
   correct_count: number
   total_count: number
   xp_earned: number
@@ -90,29 +83,35 @@ export interface CoinTransaction {
   created_at: string
 }
 
-export interface LeaderboardEntry {
+export interface RewardItem {
   id: string
-  name: string
-  avatar_initial: string
-  xp: number
-  level: number
-  streak: number
+  category: 'airtime' | 'data' | 'coupon' | 'premium'
+  title: string
+  subtitle: string
+  coin_cost: number
 }
 
 export const LEVEL_TITLES: Record<string, string> = {
-  '1': 'Débutant',
-  '6': 'Apprenti',
-  '16': 'Confirmé',
-  '31': 'Expert',
-  '46': 'Maître du Code',
+  '1': 'Starter',
+  '6': 'Learner',
+  '16': 'Confident',
+  '31': 'Advanced',
+  '46': 'Road Ready',
 }
 
 export function getLevelTitle(level: number): string {
-  if (level >= 46) return 'Maître du Code'
-  if (level >= 31) return 'Expert'
-  if (level >= 16) return 'Confirmé'
-  if (level >= 6) return 'Apprenti'
-  return 'Débutant'
+  if (level >= 46) return 'Road Ready'
+  if (level >= 31) return 'Advanced'
+  if (level >= 16) return 'Confident'
+  if (level >= 6) return 'Learner'
+  return 'Starter'
+}
+
+export function getVehicleLabel(type: VehicleType): string {
+  if (type === 'motorcycle') return 'Motorcycle'
+  if (type === 'truck') return 'Truck'
+  if (type === 'bus') return 'Bus'
+  return 'Car'
 }
 
 export function getXpForLevel(level: number): number {
@@ -124,4 +123,10 @@ export function getStarsFromScore(score: number): 0 | 1 | 2 | 3 {
   if (score >= 80) return 2
   if (score >= 60) return 1
   return 0
+}
+
+export function getInitials(name: string): string {
+  const trimmed = name.trim()
+  if (!trimmed) return 'P'
+  return trimmed.slice(0, 1).toUpperCase()
 }

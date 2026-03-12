@@ -1,39 +1,39 @@
-import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
-import "./globals.css";
+import type { Metadata, Viewport } from 'next'
+import localFont from 'next/font/local'
+import './globals.css'
 
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-});
+const inter = localFont({
+  src: './fonts/GeistVF.woff',
+  variable: '--font-inter',
+})
 
 export const metadata: Metadata = {
-  title: "PermisPlus — Prépare ton permis de conduire",
-  description: "Apprends, pratique et obtiens ton permis de conduire au Togo",
-};
+  title: 'PermisPlus — Drive with confidence',
+  description: 'Quiz-first driving preparation for focused adult learners.',
+}
 
 export const viewport: Viewport = {
-  width: "device-width",
+  width: 'device-width',
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
-  themeColor: "#DB4C3F",
-};
+  themeColor: '#E44332',
+}
 
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: React.ReactNode
 }>) {
   return (
     <html lang="fr">
       <body className={`${inter.variable} font-sans antialiased bg-bg`}>
-        <div className="min-h-screen flex justify-center bg-gray-200">
-          <div className="w-full max-w-[430px] min-h-screen bg-bg relative overflow-hidden">
+        <div className="min-h-screen flex justify-center bg-[#e5e7eb]">
+          <div className="w-full max-w-[430px] min-h-screen bg-bg relative overflow-hidden app-gradient shadow-soft">
             {children}
           </div>
         </div>
       </body>
     </html>
-  );
+  )
 }

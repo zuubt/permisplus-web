@@ -1,112 +1,123 @@
 'use client'
 
-import { use, useEffect, useState, useCallback } from 'react'
+import { use, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { ArrowLeft, Volume2, SkipForward } from 'lucide-react'
-import { getChapterQuizzes, CHAPTERS, shuffleArray } from '@/lib/quiz-data'
-import { QuizQuestion, QuizOption } from '@/lib/types'
-import { speak, stopSpeech, isMuted } from '@/lib/audio'
+import { ArrowLeft, CheckCircle2, ChevronDown, ChevronUp, RotateCcw, Volume2, XCircle } from 'lucide-react'
+import { CHAPTERS, getChapterQuizzes, shuffleArray } from '@/lib/quiz-data'
+import { QuizOption, QuizQuestion } from '@/lib/types'
+import { speak, stopSpeech } from '@/lib/audio'
 
 type FeedbackState = 'idle' | 'correct' | 'incorrect'
 
 export default function QuizPage({ params }: { params: Promise<{ chapterId: string }> }) {
   const { chapterId } = use(params)
   const router = useRouter()
+  const chapterIdNum = Number(chapterId)
+  const chapter = CHAPTERS.find(item => item.id === chapterIdNum)
 
-  const chapterIdNum = parseInt(chapterId)
-  const chapter = CHAPTERS.find(c => c.id === chapterIdNum)
   const [quizzes, setQuizzes] = useState<QuizQuestion[]>([])
   const [currentIdx, setCurrentIdx] = useState(0)
   const [selectedIds, setSelectedIds] = useState<string[]>([])
   const [feedback, setFeedback] = useState<FeedbackState>('idle')
-  const [results, setResults] = useState<{ questionId: string; correct: boolean }[]>([])
-  const [lives, setLives] = useState(3)
+  const [correctCount, setCorrectCount] = useState(0)
   const [xpEarned, setXpEarned] = useState(0)
   const [showConfirmExit, setShowConfirmExit] = useState(false)
   const [stepOrder, setStepOrder] = useState<QuizOption[]>([])
+  const [retryQueue, setRetryQueue] = useState<QuizQuestion[]>([])
   const [timerLeft, setTimerLeft] = useState<number | null>(null)
 
   useEffect(() => {
-    const qs = getChapterQuizzes(chapterIdNum)
-    const shuffled = shuffleArray(qs).slice(0, chapter?.quiz_count ?? 15)
-    setQuizzes(shuffled)
-  }, [chapterIdNum, chapter])
+    const chapterQuizzes = shuffleArray(getChapterQuizzes(chapterIdNum)).slice(0, chapter?.quiz_count ?? 15)
+    setQuizzes(chapterQuizzes)
+  }, [chapter?.quiz_count, chapterIdNum])
 
   const currentQuiz = quizzes[currentIdx]
-  const progress = quizzes.length > 0 ? ((currentIdx) / quizzes.length) * 100 : 0
+  const progress = quizzes.length > 0 ? ((currentIdx + (feedback !== 'idle' ? 1 : 0)) / quizzes.length) * 100 : 0
 
-  // Auto-speak question when it loads
   useEffect(() => {
-    if (currentQuiz && feedback === 'idle') {
-      speak(currentQuiz.question)
-    }
     if (currentQuiz?.type === 'step_ordering') {
       setStepOrder(shuffleArray(currentQuiz.options))
     }
-    // Hazard detection timer
     if (currentQuiz?.type === 'hazard_detection') {
       setTimerLeft(5)
     } else {
       setTimerLeft(null)
     }
+  }, [currentQuiz])
+
+  useEffect(() => {
+    if (!currentQuiz || feedback !== 'idle') return
+    speak(currentQuiz.question)
+    return () => stopSpeech()
   }, [currentQuiz, feedback])
 
-  // Hazard detection countdown
+  useEffect(() => {
+    if (!currentQuiz || feedback === 'idle') return
+    speak(feedback === 'correct' ? 'Correct answer.' : currentQuiz.explanation)
+    return () => stopSpeech()
+  }, [currentQuiz, feedback])
+
   useEffect(() => {
     if (timerLeft === null || feedback !== 'idle') return
     if (timerLeft <= 0) {
-      handleConfirm(true) // time ran out = incorrect
+      handleConfirm(true)
       return
     }
-    const t = setTimeout(() => setTimerLeft(v => (v ?? 0) - 1), 1000)
-    return () => clearTimeout(t)
-  }, [timerLeft, feedback])
+    const timeout = setTimeout(() => setTimerLeft(value => (value ?? 0) - 1), 1000)
+    return () => clearTimeout(timeout)
+  }, [feedback, timerLeft])
+
+  if (!currentQuiz) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-bg">
+        <div className="h-10 w-10 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+      </div>
+    )
+  }
 
   function handleSelect(optionId: string) {
     if (feedback !== 'idle') return
-    const quiz = currentQuiz
-    if (!quiz) return
-
-    if (quiz.type === 'image_selection' || quiz.type === 'word_image') {
-      // Multi-select
-      setSelectedIds(prev =>
-        prev.includes(optionId) ? prev.filter(id => id !== optionId) : [...prev, optionId]
+    if (currentQuiz.type === 'image_selection' || currentQuiz.type === 'word_image') {
+      setSelectedIds(current =>
+        current.includes(optionId) ? current.filter(item => item !== optionId) : [...current, optionId]
       )
-    } else {
-      // Single select
-      setSelectedIds([optionId])
+      return
     }
+    setSelectedIds([optionId])
+  }
+
+  function isAnswerCorrect(quiz: QuizQuestion, timedOut = false): boolean {
+    if (timedOut) return false
+    if (
+      quiz.type === 'true_false' ||
+      quiz.type === 'scenario' ||
+      quiz.type === 'sign_recognition' ||
+      quiz.type === 'object_id' ||
+      quiz.type === 'hazard_detection'
+    ) {
+      return selectedIds.length === 1 && quiz.correct_ids.includes(selectedIds[0])
+    }
+    if (quiz.type === 'image_selection') {
+      return [...selectedIds].sort().join(',') === [...quiz.correct_ids].sort().join(',')
+    }
+    if (quiz.type === 'step_ordering') {
+      return stepOrder.map(item => item.id).join(',') === quiz.correct_ids.join(',')
+    }
+    return false
   }
 
   function handleConfirm(timedOut = false) {
-    const quiz = currentQuiz
-    if (!quiz) return
-
-    const correct_ids = quiz.correct_ids
-    let isCorrect = false
-
-    if (timedOut) {
-      isCorrect = false
-    } else if (quiz.type === 'true_false' || quiz.type === 'scenario' || quiz.type === 'sign_recognition' || quiz.type === 'object_id' || quiz.type === 'hazard_detection') {
-      isCorrect = selectedIds.length === 1 && correct_ids.includes(selectedIds[0])
-    } else if (quiz.type === 'image_selection') {
-      const sortedSel = [...selectedIds].sort()
-      const sortedCorrect = [...correct_ids].sort()
-      isCorrect = sortedSel.join(',') === sortedCorrect.join(',')
-    } else if (quiz.type === 'step_ordering') {
-      isCorrect = stepOrder.map(o => o.id).join(',') === correct_ids.join(',')
-    }
-
+    const isCorrect = isAnswerCorrect(currentQuiz, timedOut)
     if (isCorrect) {
-      setXpEarned(prev => prev + 10)
-      speak('Correct !')
+      setCorrectCount(value => value + 1)
+      setXpEarned(value => value + 10)
     } else {
-      if (lives > 1) setLives(l => l - 1)
-      speak(quiz.explanation)
+      setRetryQueue(current => {
+        if (current.some(item => item.id === currentQuiz.id)) return current
+        return [...current, currentQuiz]
+      })
     }
-
     setFeedback(isCorrect ? 'correct' : 'incorrect')
-    setResults(prev => [...prev, { questionId: quiz.id, correct: isCorrect }])
   }
 
   function handleNext() {
@@ -114,351 +125,299 @@ export default function QuizPage({ params }: { params: Promise<{ chapterId: stri
     setSelectedIds([])
     setFeedback('idle')
 
-    if (currentIdx + 1 >= quizzes.length) {
-      // Done — go to complete
-      const correctCount = results.filter(r => r.correct).length + (feedback === 'correct' ? 0 : 0)
-      const finalCorrect = results.filter(r => r.correct).length
-      router.replace(`/quiz/${chapterId}/complete?score=${finalCorrect}&total=${quizzes.length}&xp=${xpEarned}`)
-    } else {
-      setCurrentIdx(i => i + 1)
+    if (currentIdx + 1 < quizzes.length) {
+      setCurrentIdx(value => value + 1)
+      return
     }
+
+    if (retryQueue.length > 0) {
+      setQuizzes(retryQueue)
+      setRetryQueue([])
+      setCurrentIdx(0)
+      return
+    }
+
+    router.replace(`/quiz/${chapterId}/complete?score=${correctCount}&total=${quizzes.length}&xp=${xpEarned}`)
   }
 
-  function moveStepUp(idx: number) {
-    if (idx === 0) return
-    const arr = [...stepOrder]
-    ;[arr[idx - 1], arr[idx]] = [arr[idx], arr[idx - 1]]
-    setStepOrder(arr)
+  function moveStep(direction: 'up' | 'down', index: number) {
+    const next = [...stepOrder]
+    const target = direction === 'up' ? index - 1 : index + 1
+    if (target < 0 || target >= next.length) return
+    ;[next[index], next[target]] = [next[target], next[index]]
+    setStepOrder(next)
   }
 
-  function moveStepDown(idx: number) {
-    if (idx === stepOrder.length - 1) return
-    const arr = [...stepOrder]
-    ;[arr[idx], arr[idx + 1]] = [arr[idx + 1], arr[idx]]
-    setStepOrder(arr)
-  }
-
-  if (!currentQuiz) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-bg">
-        <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin" />
-      </div>
-    )
-  }
-
-  const canConfirm = (() => {
-    if (feedback !== 'idle') return false
-    if (currentQuiz.type === 'step_ordering') return true
-    if (currentQuiz.type === 'image_selection') return selectedIds.length > 0
-    return selectedIds.length === 1
-  })()
+  const canConfirm =
+    feedback === 'idle' &&
+    (currentQuiz.type === 'step_ordering' || currentQuiz.type === 'image_selection'
+      ? selectedIds.length > 0 || currentQuiz.type === 'step_ordering'
+      : selectedIds.length === 1)
 
   return (
-    <div className="flex flex-col min-h-screen bg-white">
-      {/* Confirm exit dialog */}
+    <div className="flex min-h-screen flex-col bg-bg">
       {showConfirmExit && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center px-6">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-sm">
-            <h3 className="text-lg font-black text-text-primary mb-2">Quitter le quiz ?</h3>
-            <p className="text-text-secondary text-sm mb-6">Votre progression pour ce chapitre ne sera pas sauvegardée.</p>
-            <div className="flex gap-3">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-6">
+          <div className="w-full max-w-sm rounded-[28px] bg-white p-6 shadow-soft">
+            <h2 className="text-xl font-bold text-text-primary">Leave this lesson?</h2>
+            <p className="mt-2 text-sm leading-6 text-text-secondary">Your current lesson progress will not be saved.</p>
+            <div className="mt-6 grid grid-cols-2 gap-3">
               <button
                 onClick={() => setShowConfirmExit(false)}
-                className="flex-1 py-3 rounded-xl border-2 border-border text-text-primary font-semibold"
+                className="rounded-2xl border border-border px-4 py-3 font-semibold text-text-primary"
               >
-                Rester
+                Stay
               </button>
               <button
-                onClick={() => { stopSpeech(); router.replace('/map') }}
-                className="flex-1 py-3 rounded-xl bg-primary text-white font-semibold"
+                onClick={() => {
+                  stopSpeech()
+                  router.replace('/learn')
+                }}
+                className="rounded-2xl bg-primary px-4 py-3 font-semibold text-white"
               >
-                Quitter
+                Leave
               </button>
             </div>
           </div>
         </div>
       )}
 
-      {/* Top bar */}
-      <div className="px-4 pt-14 pb-3 bg-white border-b border-border">
-        <div className="flex items-center gap-3 mb-3">
-          <button onClick={() => setShowConfirmExit(true)} className="text-text-secondary p-1 -ml-1">
-            <ArrowLeft size={22} />
+      <header className="border-b border-border bg-white px-5 pb-4 pt-8">
+        <div className="mb-4 flex items-center gap-3">
+          <button
+            onClick={() => setShowConfirmExit(true)}
+            className="flex h-11 w-11 items-center justify-center rounded-full border border-border bg-bg text-text-primary"
+          >
+            <ArrowLeft size={18} />
           </button>
-          <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
-            <div
-              className="h-full bg-primary rounded-full transition-all duration-300"
-              style={{ width: `${progress}%` }}
-            />
+          <div className="h-2 flex-1 overflow-hidden rounded-full bg-[#ececec]">
+            <div className="h-full rounded-full bg-primary transition-all" style={{ width: `${progress}%` }} />
           </div>
-          <span className="text-sm font-bold text-text-secondary whitespace-nowrap">
+          <span className="text-sm font-semibold text-text-secondary">
             {currentIdx + 1}/{quizzes.length}
           </span>
         </div>
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-1">
-            {Array.from({ length: 3 }).map((_, i) => (
-              <span key={i} className={`text-lg ${i < lives ? 'text-primary' : 'text-gray-200'}`}>♥</span>
-            ))}
+
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-text-secondary">Lesson</p>
+            <p className="mt-1 text-base font-semibold text-text-primary">{chapter?.title}</p>
           </div>
-          <div className="flex items-center gap-2">
-            {xpEarned > 0 && (
-              <span className="text-accent text-sm font-bold">+{xpEarned} XP</span>
-            )}
-            <button onClick={() => speak(currentQuiz.question)} className="text-text-secondary p-1">
+          <div className="text-right">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-text-secondary">Session XP</p>
+            <p className="mt-1 text-base font-semibold text-text-primary">+{xpEarned}</p>
+          </div>
+        </div>
+      </header>
+
+      <main className="flex-1 px-5 py-5">
+        <section className="surface-card rounded-[28px] p-5">
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-text-secondary">Question</p>
+              <h1 className="mt-2 text-2xl font-bold leading-tight text-text-primary">{currentQuiz.question}</h1>
+            </div>
+            <button
+              onClick={() => speak(currentQuiz.question)}
+              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-border bg-bg text-text-secondary"
+            >
               <Volume2 size={18} />
             </button>
           </div>
-        </div>
-      </div>
 
-      {/* Question */}
-      <div className="flex-1 overflow-y-auto">
-        <div className="px-5 pt-5 pb-3">
-          {chapter && (
-            <p className="text-xs font-semibold text-text-disabled uppercase tracking-wide mb-2">
-              {chapter.emoji} {chapter.title}
-            </p>
-          )}
-          <h2 className="text-lg font-bold text-text-primary leading-snug">
-            {currentQuiz.question}
-          </h2>
-
-          {/* Hazard timer */}
           {currentQuiz.type === 'hazard_detection' && timerLeft !== null && feedback === 'idle' && (
-            <div className={`mt-2 text-2xl font-black ${timerLeft <= 2 ? 'text-primary' : 'text-text-primary'}`}>
-              {timerLeft}s
-            </div>
-          )}
-        </div>
-
-        {/* Image for sign/object/hazard */}
-        {currentQuiz.image_key && (
-          <div className="px-5 mb-4">
-            <div className="bg-bg rounded-2xl h-40 flex items-center justify-center border border-border">
-              <span className="text-6xl">{getEmojiForImageKey(currentQuiz.image_key)}</span>
-            </div>
-          </div>
-        )}
-
-        <div className="px-5 pb-5">
-          {/* TRUE/FALSE */}
-          {currentQuiz.type === 'true_false' && (
-            <div className="grid grid-cols-2 gap-3">
-              {currentQuiz.options.map(opt => {
-                const isSelected = selectedIds.includes(opt.id)
-                const isCorrect = currentQuiz.correct_ids.includes(opt.id)
-                const showResult = feedback !== 'idle'
-                return (
-                  <button
-                    key={opt.id}
-                    onClick={() => handleSelect(opt.id)}
-                    disabled={feedback !== 'idle'}
-                    className={`py-6 rounded-2xl font-bold text-base transition-all ${getOptionStyle(isSelected, isCorrect, showResult, opt.id === 'true')}`}
-                  >
-                    {opt.text}
-                  </button>
-                )
-              })}
+            <div className="mt-4 inline-flex rounded-full bg-primary-light px-3 py-1 text-sm font-semibold text-primary">
+              {timerLeft}s remaining
             </div>
           )}
 
-          {/* SCENARIO / SIGN_RECOGNITION / OBJECT_ID / HAZARD */}
-          {(['scenario', 'sign_recognition', 'object_id', 'hazard_detection'].includes(currentQuiz.type)) && (
-            <div className="space-y-2.5">
-              {currentQuiz.options.map(opt => {
-                const isSelected = selectedIds.includes(opt.id)
-                const isCorrect = currentQuiz.correct_ids.includes(opt.id)
-                const showResult = feedback !== 'idle'
-                return (
-                  <button
-                    key={opt.id}
-                    onClick={() => handleSelect(opt.id)}
-                    disabled={feedback !== 'idle'}
-                    className={`w-full flex items-center gap-3 p-4 rounded-xl border-2 font-semibold text-left transition-all ${getOptionStyleRow(isSelected, isCorrect, showResult)}`}
-                  >
-                    {opt.label && (
-                      <span className={`w-7 h-7 rounded-full flex items-center justify-center text-sm font-bold shrink-0 ${
-                        isSelected ? 'bg-white/30' : 'bg-gray-100 text-text-secondary'
-                      }`}>
-                        {opt.label}
-                      </span>
-                    )}
-                    <span className="flex-1">{opt.text}</span>
-                    {showResult && isCorrect && <span className="text-success">✓</span>}
-                    {showResult && isSelected && !isCorrect && <span className="text-primary">✗</span>}
-                  </button>
-                )
-              })}
+          {currentQuiz.image_key && (
+            <div className="mt-5 rounded-[24px] border border-dashed border-border bg-bg p-5">
+              <div className="flex min-h-40 items-center justify-center rounded-[20px] border border-border bg-white">
+                <div className="text-center">
+                  <p className="text-sm font-semibold text-text-primary">Image asset placeholder</p>
+                  <p className="mt-1 text-xs text-text-secondary">assets/{currentQuiz.image_key}.jpg</p>
+                </div>
+              </div>
             </div>
           )}
 
-          {/* IMAGE SELECTION (multi-select grid) */}
-          {currentQuiz.type === 'image_selection' && (
-            <div>
-              <div className="grid grid-cols-3 gap-3 mb-3">
-                {currentQuiz.options.map(opt => {
-                  const isSelected = selectedIds.includes(opt.id)
-                  const isCorrect = currentQuiz.correct_ids.includes(opt.id)
-                  const showResult = feedback !== 'idle'
+          <div className="mt-5">
+            {currentQuiz.type === 'true_false' && (
+              <div className="grid grid-cols-2 gap-3">
+                {currentQuiz.options.map(option => renderBinaryOption(option))}
+              </div>
+            )}
+
+            {['scenario', 'sign_recognition', 'object_id', 'hazard_detection'].includes(currentQuiz.type) && (
+              <div className="space-y-3">
+                {currentQuiz.options.map(option => renderRowOption(option))}
+              </div>
+            )}
+
+            {currentQuiz.type === 'image_selection' && (
+              <div className="grid grid-cols-2 gap-3">
+                {currentQuiz.options.map(option => {
+                  const selected = selectedIds.includes(option.id)
+                  const correct = currentQuiz.correct_ids.includes(option.id)
+                  const showState = feedback !== 'idle'
                   return (
                     <button
-                      key={opt.id}
-                      onClick={() => handleSelect(opt.id)}
+                      key={option.id}
+                      onClick={() => handleSelect(option.id)}
                       disabled={feedback !== 'idle'}
-                      className={`aspect-square rounded-2xl flex flex-col items-center justify-center gap-2 border-2 transition-all p-2 ${
-                        showResult
-                          ? isCorrect
-                            ? 'border-success bg-success-light'
-                            : isSelected
-                            ? 'border-primary bg-primary-light'
-                            : 'border-border bg-bg'
-                          : isSelected
-                          ? 'border-primary bg-primary-light'
-                          : 'border-border bg-bg'
+                      className={`rounded-[24px] border p-4 text-left transition-colors ${
+                        getOptionCardClass({ selected, correct, showState })
                       }`}
                     >
-                      <span className="text-3xl">{getEmojiForImageKey(opt.image_key ?? '')}</span>
-                      <span className="text-xs font-semibold text-text-secondary text-center leading-tight">{opt.text}</span>
+                      <div className="rounded-2xl border border-dashed border-border bg-white px-3 py-6 text-center">
+                        <p className="text-sm font-semibold text-text-primary">{option.text}</p>
+                        <p className="mt-1 text-xs text-text-secondary">assets/{option.image_key}.jpg</p>
+                      </div>
                     </button>
                   )
                 })}
               </div>
-              {selectedIds.length > 0 && feedback === 'idle' && (
-                <p className="text-sm text-text-secondary text-center">
-                  ✓ {selectedIds.length} sélectionné{selectedIds.length > 1 ? 's' : ''}
-                </p>
-              )}
-            </div>
-          )}
+            )}
 
-          {/* STEP ORDERING */}
-          {currentQuiz.type === 'step_ordering' && (
-            <div className="space-y-2">
-              {(feedback !== 'idle' ? currentQuiz.options.filter(o => currentQuiz.correct_ids.includes(o.id)).sort((a, b) => currentQuiz.correct_ids.indexOf(a.id) - currentQuiz.correct_ids.indexOf(b.id)) : stepOrder).map((step, idx) => {
-                const correctPos = currentQuiz.correct_ids.indexOf(step.id)
-                const isInCorrectPos = feedback !== 'idle' && correctPos === idx
-                return (
-                  <div
-                    key={step.id}
-                    className={`flex items-center gap-3 p-3.5 rounded-xl border-2 ${
-                      feedback !== 'idle'
-                        ? isInCorrectPos
-                          ? 'border-success bg-success-light'
-                          : 'border-primary bg-primary-light'
-                        : 'border-border bg-bg'
-                    }`}
-                  >
-                    <span className={`w-7 h-7 rounded-full flex items-center justify-center text-sm font-bold shrink-0 ${
-                      feedback !== 'idle'
-                        ? isInCorrectPos ? 'bg-success text-white' : 'bg-primary text-white'
-                        : 'bg-text-disabled/20 text-text-secondary'
-                    }`}>
-                      {idx + 1}
-                    </span>
-                    <span className="flex-1 text-sm font-semibold text-text-primary">{step.text}</span>
-                    {feedback === 'idle' && (
-                      <div className="flex flex-col gap-1">
-                        <button onClick={() => moveStepUp(idx)} className="text-text-disabled text-xs leading-none p-1">▲</button>
-                        <button onClick={() => moveStepDown(idx)} className="text-text-disabled text-xs leading-none p-1">▼</button>
+            {currentQuiz.type === 'step_ordering' && (
+              <div className="space-y-3">
+                {(feedback !== 'idle'
+                  ? currentQuiz.correct_ids
+                      .map(id => currentQuiz.options.find(option => option.id === id))
+                      .filter(Boolean) as QuizOption[]
+                  : stepOrder
+                ).map((option, index) => (
+                  <div key={option.id} className="rounded-[24px] border border-border bg-bg p-4">
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white text-sm font-semibold text-text-primary">
+                        {index + 1}
                       </div>
-                    )}
+                      <p className="flex-1 text-sm font-semibold text-text-primary">{option.text}</p>
+                      {feedback === 'idle' && (
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => moveStep('up', index)}
+                            className="flex h-9 w-9 items-center justify-center rounded-full border border-border bg-white text-text-secondary"
+                          >
+                            <ChevronUp size={16} />
+                          </button>
+                          <button
+                            onClick={() => moveStep('down', index)}
+                            className="flex h-9 w-9 items-center justify-center rounded-full border border-border bg-white text-text-secondary"
+                          >
+                            <ChevronDown size={16} />
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   </div>
-                )
-              })}
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Feedback panel */}
-      {feedback !== 'idle' && (
-        <div className={`px-5 py-5 ${feedback === 'correct' ? 'bg-success-light border-t-2 border-success' : 'bg-primary-light border-t-2 border-primary-border'}`}>
-          <div className="flex items-center gap-3 mb-2">
-            <div className={`w-10 h-10 rounded-full flex items-center justify-center text-xl font-bold ${
-              feedback === 'correct' ? 'bg-success text-white' : 'bg-primary text-white'
-            }`}>
-              {feedback === 'correct' ? '✓' : '✗'}
-            </div>
-            <div>
-              <p className={`font-black text-base ${feedback === 'correct' ? 'text-success' : 'text-primary'}`}>
-                {feedback === 'correct' ? 'Correct !' : 'Incorrect'}
-              </p>
-              {feedback === 'correct' && (
-                <span className="text-xs font-bold text-accent bg-accent-light px-2 py-0.5 rounded-full">+10 XP</span>
-              )}
-            </div>
+                ))}
+              </div>
+            )}
           </div>
-          <p className="text-sm text-text-secondary leading-relaxed">{currentQuiz.explanation}</p>
-        </div>
-      )}
+        </section>
+      </main>
 
-      {/* Bottom action */}
-      <div className="px-5 py-4 bg-white border-t border-border">
+      <footer className="border-t border-border bg-white px-5 py-4">
         {feedback === 'idle' ? (
-          <div className="flex gap-3">
-            <button
-              onClick={() => { stopSpeech(); handleNext() }}
-              className="flex items-center gap-1 text-text-disabled px-4 py-4 rounded-xl border-2 border-border"
-            >
-              <SkipForward size={18} />
-              <span className="text-sm font-semibold">Passer</span>
-            </button>
-            <button
-              onClick={() => handleConfirm()}
-              disabled={!canConfirm}
-              className="flex-1 bg-primary text-white py-4 rounded-xl font-bold disabled:opacity-40 active:scale-95 transition-transform"
-            >
-              Confirmer
-            </button>
-          </div>
-        ) : (
           <button
-            onClick={handleNext}
-            className={`w-full py-4 rounded-xl font-bold active:scale-95 transition-transform ${
-              feedback === 'correct' ? 'bg-success text-white' : 'bg-primary text-white'
-            }`}
+            disabled={!canConfirm}
+            onClick={() => handleConfirm(false)}
+            className="w-full rounded-2xl bg-primary px-4 py-4 text-base font-semibold text-white disabled:cursor-not-allowed disabled:bg-[#f0a39c]"
           >
-            {currentIdx + 1 >= quizzes.length ? 'Voir les résultats' : 'Suivant →'}
+            Confirm Answer
           </button>
+        ) : (
+          <div className="space-y-4">
+            <div
+              className={`rounded-[24px] px-4 py-4 ${
+                feedback === 'correct' ? 'bg-success-light text-success' : 'bg-error-light text-error'
+              }`}
+            >
+              <div className="flex items-start gap-3">
+                {feedback === 'correct' ? <CheckCircle2 size={20} /> : <XCircle size={20} />}
+                <div>
+                  <p className="font-semibold">{feedback === 'correct' ? 'Correct answer' : 'Incorrect answer'}</p>
+                  <p className="mt-1 text-sm leading-6">{currentQuiz.explanation}</p>
+                </div>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <button
+                onClick={() => speak(currentQuiz.explanation)}
+                className="rounded-2xl border border-border px-4 py-4 text-sm font-semibold text-text-primary"
+              >
+                Hear Explanation
+              </button>
+              <button
+                onClick={handleNext}
+                className="rounded-2xl bg-primary px-4 py-4 text-sm font-semibold text-white"
+              >
+                {retryQueue.length > 0 && currentIdx + 1 >= quizzes.length ? 'Retry Missed Questions' : 'Next Question'}
+              </button>
+            </div>
+          </div>
         )}
-      </div>
+      </footer>
     </div>
   )
-}
 
-// ── Helpers ────────────────────────────────────────────────────────────────────
-
-function getOptionStyle(isSelected: boolean, isCorrect: boolean, showResult: boolean, _isTrueButton: boolean) {
-  if (showResult) {
-    if (isCorrect) return 'bg-success text-white border-2 border-success'
-    if (isSelected) return 'bg-primary text-white border-2 border-primary'
-    return 'bg-bg text-text-disabled border-2 border-border'
+  function renderBinaryOption(option: QuizOption) {
+    const selected = selectedIds.includes(option.id)
+    const correct = currentQuiz.correct_ids.includes(option.id)
+    const showState = feedback !== 'idle'
+    return (
+      <button
+        key={option.id}
+        onClick={() => handleSelect(option.id)}
+        disabled={feedback !== 'idle'}
+        className={`rounded-[24px] border px-4 py-6 text-center text-base font-semibold transition-colors ${
+          getOptionCardClass({ selected, correct, showState })
+        }`}
+      >
+        {option.text}
+      </button>
+    )
   }
-  if (isSelected) return 'bg-primary text-white border-2 border-primary'
-  return 'bg-bg text-text-primary border-2 border-border'
-}
 
-function getOptionStyleRow(isSelected: boolean, isCorrect: boolean, showResult: boolean) {
-  if (showResult) {
-    if (isCorrect) return 'border-success bg-success-light text-success'
-    if (isSelected) return 'border-primary bg-primary-light text-primary'
-    return 'border-border bg-white text-text-primary'
+  function renderRowOption(option: QuizOption) {
+    const selected = selectedIds.includes(option.id)
+    const correct = currentQuiz.correct_ids.includes(option.id)
+    const showState = feedback !== 'idle'
+    return (
+      <button
+        key={option.id}
+        onClick={() => handleSelect(option.id)}
+        disabled={feedback !== 'idle'}
+        className={`flex w-full items-center gap-3 rounded-[24px] border px-4 py-4 text-left transition-colors ${
+          getOptionCardClass({ selected, correct, showState })
+        }`}
+      >
+        {option.label && (
+          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white text-sm font-semibold text-text-primary">
+            {option.label}
+          </div>
+        )}
+        <span className="flex-1 text-sm font-semibold text-text-primary">{option.text}</span>
+      </button>
+    )
   }
-  if (isSelected) return 'border-primary bg-primary-light text-primary'
-  return 'border-border bg-white text-text-primary'
 }
 
-const IMAGE_EMOJI_MAP: Record<string, string> = {
-  steering_wheel: '🔵', laptop: '💻', brake_pedal: '🟤', bicycle: '🚲',
-  rearview_mirror: '🪟', phone: '📱', seatbelt: '🪢', warning_triangle: '⚠️',
-  fire_extinguisher: '🧯', reflective_vest: '🦺', first_aid_kit: '🩹',
-  spare_wheel: '🛞', warning_engine: '⚙️', warning_oil: '🛢️', warning_battery: '🔋',
-  warning_temp: '🌡️', sign_stop: '🛑', sign_give_way: '🔺', sign_no_entry: '⛔',
-  sign_speed_50: '5️⃣0️⃣', sign_pedestrian_crossing: '🚶', sign_no_overtaking: '🚫',
-  hazard_pedestrian: '🚶‍♂️', clutch_pedal: '🔵', accelerator_pedal: '🟢',
-}
-
-function getEmojiForImageKey(key: string): string {
-  return IMAGE_EMOJI_MAP[key] ?? '❓'
+function getOptionCardClass({
+  selected,
+  correct,
+  showState,
+}: {
+  selected: boolean
+  correct: boolean
+  showState: boolean
+}) {
+  if (showState) {
+    if (correct) return 'border-success bg-success-light'
+    if (selected) return 'border-error bg-error-light'
+  }
+  if (selected) return 'border-primary bg-primary-light'
+  return 'border-border bg-white'
 }

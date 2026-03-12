@@ -1,19 +1,25 @@
-import { User, ChapterProgress, CoinTransaction, LeaderboardEntry, getStarsFromScore, getXpForLevel } from './types'
+import {
+  ChapterProgress,
+  CoinTransaction,
+  RewardItem,
+  User,
+  VehicleType,
+  getStarsFromScore,
+  getXpForLevel,
+} from './types'
 
 const USER_KEY = 'pp_user'
 const PROGRESS_KEY = 'pp_progress'
 const TX_KEY = 'pp_transactions'
 const SYNC_KEY = 'pp_sync_queue'
 
-// ─── Utilities ────────────────────────────────────────────────────────────────
-
-export function generateId(): string {
-  return Math.random().toString(36).slice(2, 9) + Date.now().toString(36)
-}
-
-export function generateReferralCode(): string {
-  return Math.random().toString(36).slice(2, 8).toUpperCase()
-}
+export const REWARDS: RewardItem[] = [
+  { id: 'airtime-100', category: 'airtime', title: 'Mobile Airtime', subtitle: '100 FCFA top-up', coin_cost: 120 },
+  { id: 'airtime-250', category: 'airtime', title: 'Mobile Airtime', subtitle: '250 FCFA top-up', coin_cost: 280 },
+  { id: 'data-100', category: 'data', title: 'Data Bundle', subtitle: '100 MB package', coin_cost: 200 },
+  { id: 'coupon-10', category: 'coupon', title: 'Discount Coupon', subtitle: '10% partner coupon', coin_cost: 350 },
+  { id: 'premium-signs', category: 'premium', title: 'Premium Quiz Pack', subtitle: 'Advanced road signs set', coin_cost: 420 },
+]
 
 function ls<T>(key: string, fallback: T): T {
   if (typeof window === 'undefined') return fallback
@@ -30,10 +36,54 @@ function lsSet(key: string, value: unknown): void {
   localStorage.setItem(key, JSON.stringify(value))
 }
 
-// ─── User CRUD ────────────────────────────────────────────────────────────────
+export function generateId(): string {
+  return Math.random().toString(36).slice(2, 9) + Date.now().toString(36)
+}
+
+function normalizeVehicleType(value: unknown): VehicleType {
+  if (value === 'motorcycle' || value === 'truck' || value === 'bus') return value
+  return 'car'
+}
+
+function normalizeUser(raw: Record<string, unknown>): User {
+  const ageValue = raw.age
+  const legacyAgeRange = typeof raw.age_range === 'string' ? raw.age_range : null
+  let age: number | null = typeof ageValue === 'number' ? ageValue : null
+
+  if (age === null && legacyAgeRange) {
+    if (legacyAgeRange === '16-18') age = 18
+    else if (legacyAgeRange === '18-25') age = 22
+    else if (legacyAgeRange === '25-35') age = 30
+    else if (legacyAgeRange === '35+') age = 35
+  }
+
+  return {
+    id: typeof raw.id === 'string' ? raw.id : generateId(),
+    name: typeof raw.name === 'string' ? raw.name : 'Learner',
+    phone: typeof raw.phone === 'string' ? raw.phone : '',
+    country_code: typeof raw.country_code === 'string' ? raw.country_code : '+228',
+    age,
+    vehicle_type: normalizeVehicleType(raw.vehicle_type),
+    coins: typeof raw.coins === 'number' ? raw.coins : 0,
+    xp: typeof raw.xp === 'number' ? raw.xp : 0,
+    level: typeof raw.level === 'number' ? raw.level : 1,
+    streak: typeof raw.streak === 'number' ? raw.streak : 0,
+    last_active_date: typeof raw.last_active_date === 'string' ? raw.last_active_date : null,
+    completed_onboarding: Boolean(raw.completed_onboarding),
+    daily_coin_earned: typeof raw.daily_coin_earned === 'number' ? raw.daily_coin_earned : 0,
+    daily_coin_date: typeof raw.daily_coin_date === 'string' ? raw.daily_coin_date : null,
+    created_at: typeof raw.created_at === 'string' ? raw.created_at : new Date().toISOString(),
+  }
+}
 
 export function getUser(): User | null {
-  return ls<User | null>(USER_KEY, null)
+  const raw = ls<Record<string, unknown> | null>(USER_KEY, null)
+  if (!raw) return null
+  const normalized = normalizeUser(raw)
+  if (JSON.stringify(raw) !== JSON.stringify(normalized)) {
+    saveUser(normalized)
+  }
+  return normalized
 }
 
 export function saveUser(user: User): void {
@@ -50,69 +100,36 @@ export function clearUser(): void {
 export function createUser(params: {
   name: string
   phone: string
-  age_range: User['age_range']
-  vehicle_type: User['vehicle_type']
-  avatar_initial: string
-  referred_by?: string
+  country_code?: string
+  age: number | null
+  vehicle_type: VehicleType
 }): User {
   const now = new Date().toISOString()
   const user: User = {
     id: generateId(),
-    name: params.name,
+    name: params.name.trim() || 'Learner',
     phone: params.phone,
-    age_range: params.age_range,
+    country_code: params.country_code ?? '+228',
+    age: params.age,
     vehicle_type: params.vehicle_type,
-    avatar_initial: params.avatar_initial,
     coins: 0,
     xp: 0,
     level: 1,
     streak: 0,
     last_active_date: null,
     completed_onboarding: true,
-    referral_code: generateReferralCode(),
-    referred_by: params.referred_by ?? null,
     daily_coin_earned: 0,
     daily_coin_date: null,
-    is_guest: false,
     created_at: now,
   }
   saveUser(user)
   return user
 }
-
-export function createGuestUser(): User {
-  const now = new Date().toISOString()
-  const user: User = {
-    id: generateId(),
-    name: 'Invité',
-    phone: '',
-    age_range: '18-25',
-    vehicle_type: 'car',
-    avatar_initial: 'I',
-    coins: 0,
-    xp: 0,
-    level: 1,
-    streak: 0,
-    last_active_date: null,
-    completed_onboarding: true,
-    referral_code: generateReferralCode(),
-    referred_by: null,
-    daily_coin_earned: 0,
-    daily_coin_date: null,
-    is_guest: true,
-    created_at: now,
-  }
-  saveUser(user)
-  return user
-}
-
-// ─── XP & Leveling ────────────────────────────────────────────────────────────
 
 export function addXp(amount: number): User | null {
   const user = getUser()
   if (!user) return null
   user.xp += amount
-  // level up: each level requires level * 200 cumulative XP
   while (user.xp >= getXpForLevel(user.level + 1)) {
     user.level += 1
   }
@@ -132,15 +149,9 @@ export function getXpProgress(user: User): { current: number; needed: number; pc
   }
 }
 
-// ─── Coins ────────────────────────────────────────────────────────────────────
-
 const DAILY_CAP = 100
 
-export function addCoins(
-  amount: number,
-  type: CoinTransaction['type'],
-  description: string
-): User | null {
+export function addCoins(amount: number, type: CoinTransaction['type'], description: string): User | null {
   const user = getUser()
   if (!user) return null
 
@@ -148,8 +159,7 @@ export function addCoins(
   let actual = amount
 
   if (type === 'earned') {
-    const currentDate = user.daily_coin_date
-    const earned = currentDate === today ? user.daily_coin_earned : 0
+    const earned = user.daily_coin_date === today ? user.daily_coin_earned : 0
     if (earned >= DAILY_CAP) return user
     actual = Math.min(amount, DAILY_CAP - earned)
     user.daily_coin_earned = earned + actual
@@ -175,8 +185,6 @@ export function spendCoins(amount: number, description: string): User | null {
   return addCoins(-amount, 'redeemed', description)
 }
 
-// ─── Streak ───────────────────────────────────────────────────────────────────
-
 export function checkAndUpdateStreak(): { user: User; bonusCoins: number; levelledUp: boolean } {
   const user = getUser()
   if (!user) return { user: null as unknown as User, bonusCoins: 0, levelledUp: false }
@@ -189,7 +197,7 @@ export function checkAndUpdateStreak(): { user: User; bonusCoins: number; levell
   user.last_active_date = today
 
   const prevLevel = user.level
-  user.xp += 25 // daily first session bonus
+  user.xp += 25
   while (user.xp >= getXpForLevel(user.level + 1)) user.level += 1
   const levelledUp = user.level > prevLevel
 
@@ -202,8 +210,6 @@ export function checkAndUpdateStreak(): { user: User; bonusCoins: number; levell
   saveUser(user)
   return { user, bonusCoins, levelledUp }
 }
-
-// ─── Chapter Progress ─────────────────────────────────────────────────────────
 
 export function getAllChapterProgress(): Record<number, ChapterProgress> {
   return ls<Record<number, ChapterProgress>>(PROGRESS_KEY, {})
@@ -225,12 +231,10 @@ export function saveChapterResult(
   const stars = getStarsFromScore(score)
   const all = getAllChapterProgress()
   const prev = all[chapterId]
+  const isImprovement = !prev || score > (prev.best_score ?? 0)
 
   const xpBase = stars === 3 ? 150 : stars >= 1 ? 100 : 20
   const coinsBase = stars === 3 ? 50 : stars >= 1 ? 25 : 10
-
-  // XP: only full amount if first time or improved
-  const isImprovement = !prev || score > (prev.best_score ?? 0)
   const xpEarned = isImprovement ? xpBase : Math.round(xpBase * 0.3)
   const coinsEarned = isImprovement ? coinsBase : Math.round(coinsBase * 0.3)
 
@@ -245,9 +249,7 @@ export function saveChapterResult(
   lsSet(PROGRESS_KEY, all)
 
   addXp(xpEarned)
-  addCoins(coinsEarned, 'earned', `Chapitre ${chapterId} complété`)
-  addCoins(10, 'earned', 'Session terminée')
-
+  addCoins(coinsEarned, 'earned', `Lesson ${chapterId} completed`)
   addToSyncQueue({
     table: 'user_chapter_progress',
     data: { ...all[chapterId], user_id: user.id },
@@ -255,8 +257,6 @@ export function saveChapterResult(
 
   return { xp: xpEarned, coins: coinsEarned, stars }
 }
-
-// ─── Transactions ─────────────────────────────────────────────────────────────
 
 export function getTransactions(): CoinTransaction[] {
   return ls<CoinTransaction[]>(TX_KEY, [])
@@ -267,34 +267,6 @@ function addTransaction(tx: CoinTransaction): void {
   txs.unshift(tx)
   lsSet(TX_KEY, txs.slice(0, 60))
 }
-
-// ─── Leaderboard (fake seed data + real user) ─────────────────────────────────
-
-const FAKE_PLAYERS: LeaderboardEntry[] = [
-  { id: 'l1', name: 'Kofi A.', avatar_initial: 'K', xp: 2450, level: 13, streak: 21 },
-  { id: 'l2', name: 'Ama B.', avatar_initial: 'A', xp: 1980, level: 10, streak: 14 },
-  { id: 'l3', name: 'Yaw C.', avatar_initial: 'Y', xp: 1520, level: 8, streak: 7 },
-  { id: 'l4', name: 'Efua D.', avatar_initial: 'E', xp: 980, level: 5, streak: 3 },
-  { id: 'l5', name: 'Kwame E.', avatar_initial: 'K', xp: 750, level: 4, streak: 5 },
-]
-
-export function getLeaderboard(): LeaderboardEntry[] {
-  const user = getUser()
-  const entries: LeaderboardEntry[] = [...FAKE_PLAYERS]
-  if (user) {
-    entries.push({
-      id: user.id,
-      name: user.name,
-      avatar_initial: user.avatar_initial,
-      xp: user.xp,
-      level: user.level,
-      streak: user.streak,
-    })
-  }
-  return entries.sort((a, b) => b.xp - a.xp)
-}
-
-// ─── Sync Queue ───────────────────────────────────────────────────────────────
 
 interface SyncItem {
   table: string

@@ -3,15 +3,15 @@ import { Chapter, QuizQuestion } from './types'
 // ─── Chapters ─────────────────────────────────────────────────────────────────
 
 export const CHAPTERS: Chapter[] = [
-  { id: 1, title: 'Comprendre sa voiture', emoji: '🚗', description: 'Les pièces, commandes et instruments de bord', quiz_count: 15, is_free: true },
-  { id: 2, title: 'Actions de base', emoji: '🔑', description: 'Démarrer, s\'arrêter, diriger et changer de vitesse', quiz_count: 15, is_free: true },
-  { id: 3, title: 'La signalisation routière', emoji: '🚦', description: 'Panneaux de danger, interdiction et obligation', quiz_count: 15, is_free: true },
-  { id: 4, title: 'Les règles de priorité', emoji: '⚖️', description: 'Intersections, ronds-points et cédez-le-passage', quiz_count: 15, is_free: false },
-  { id: 5, title: 'Conduite en ville', emoji: '🏙️', description: 'Vitesses, piétons et circulation urbaine', quiz_count: 15, is_free: false },
-  { id: 6, title: 'Stationnement & manœuvres', emoji: '🅿️', description: 'Se garer, faire demi-tour et reculer', quiz_count: 15, is_free: false },
-  { id: 7, title: 'Gestion des risques', emoji: '⚠️', description: 'Distances de sécurité, dépassement et vigilance', quiz_count: 15, is_free: false },
-  { id: 8, title: 'Situations d\'urgence', emoji: '🚨', description: 'Pannes, accidents et procédures d\'urgence', quiz_count: 15, is_free: false },
-  { id: 9, title: 'Examen Blanc Final', emoji: '📋', description: 'Simulation complète — 40 questions, 30 minutes', quiz_count: 40, is_free: false },
+  { id: 1, title: 'Understanding Your Car', description: 'Parts, controls, and dashboard essentials', quiz_count: 15, is_free: true },
+  { id: 2, title: 'Driving Basics', description: 'Starting, stopping, steering, and shifting', quiz_count: 15, is_free: true },
+  { id: 3, title: 'Road Signs', description: 'Danger, prohibition, and obligation signs', quiz_count: 15, is_free: true },
+  { id: 4, title: 'Priority Rules', description: 'Intersections, roundabouts, and right of way', quiz_count: 15, is_free: false },
+  { id: 5, title: 'Traffic Situations', description: 'Urban driving, pedestrians, and speed limits', quiz_count: 15, is_free: false },
+  { id: 6, title: 'Parking', description: 'Parking, reversing, and maneuvering safely', quiz_count: 15, is_free: false },
+  { id: 7, title: 'Hazard Awareness', description: 'Safe distances, overtaking, and vigilance', quiz_count: 15, is_free: false },
+  { id: 8, title: 'Emergency Situations', description: 'Breakdowns, accidents, and emergency procedures', quiz_count: 15, is_free: false },
+  { id: 9, title: 'Mock Exam', description: 'Full simulation with timed mixed questions', quiz_count: 40, is_free: false },
 ]
 
 // ─── Chapter 1 — Comprendre sa voiture ───────────────────────────────────────
