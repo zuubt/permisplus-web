@@ -62,6 +62,7 @@ export interface QuizQuestion {
   explanation: string
   difficulty: 'easy' | 'medium' | 'hard'
   image_key?: string
+  time_limit_sec?: number
 }
 
 export interface QuizSessionResult {

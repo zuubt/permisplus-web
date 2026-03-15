@@ -1,4 +1,8 @@
 const MUTE_KEY = 'pp_audio_muted'
+type SpeakCallbacks = {
+  onEnd?: () => void
+  onError?: () => void
+}
 
 export function isMuted(): boolean {
   if (typeof window === 'undefined') return true
@@ -19,10 +23,10 @@ export function toggleMuted(): boolean {
 
 let currentUtterance: SpeechSynthesisUtterance | null = null
 
-export function speak(text: string): void {
-  if (typeof window === 'undefined') return
-  if (isMuted()) return
-  if (!('speechSynthesis' in window)) return
+export function speak(text: string, callbacks?: SpeakCallbacks): boolean {
+  if (typeof window === 'undefined') return false
+  if (isMuted()) return false
+  if (!('speechSynthesis' in window)) return false
 
   stopSpeech()
 
@@ -37,8 +41,19 @@ export function speak(text: string): void {
   const frVoice = voices.find(v => v.lang.startsWith('fr'))
   if (frVoice) utterance.voice = frVoice
 
+  utterance.onend = () => {
+    if (currentUtterance === utterance) currentUtterance = null
+    callbacks?.onEnd?.()
+  }
+
+  utterance.onerror = () => {
+    if (currentUtterance === utterance) currentUtterance = null
+    callbacks?.onError?.()
+  }
+
   currentUtterance = utterance
   window.speechSynthesis.speak(utterance)
+  return true
 }
 
 export function stopSpeech(): void {
