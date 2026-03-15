@@ -16,6 +16,7 @@ export default function QuizPage({ params }: { params: { chapterId: string } }) 
   const router = useRouter()
   const chapterIdNum = Number(chapterId)
   const chapter = CHAPTERS.find(item => item.id === chapterIdNum)
+  const chapterTitle = toDisplayText(chapter?.title)
 
   const [quizzes, setQuizzes] = useState<QuizQuestion[]>([])
   const [currentIdx, setCurrentIdx] = useState(0)
@@ -50,13 +51,13 @@ export default function QuizPage({ params }: { params: { chapterId: string } }) 
 
   useEffect(() => {
     if (!currentQuiz || feedback !== 'idle') return
-    speak(currentQuiz.question)
+    speak(toDisplayText(currentQuiz.question))
     return () => stopSpeech()
   }, [currentQuiz, feedback])
 
   useEffect(() => {
     if (!currentQuiz || feedback === 'idle') return
-    speak(feedback === 'correct' ? 'Bonne reponse.' : currentQuiz.explanation)
+    speak(feedback === 'correct' ? 'Bonne reponse.' : toDisplayText(currentQuiz.explanation))
     return () => stopSpeech()
   }, [currentQuiz, feedback])
 
@@ -204,7 +205,7 @@ export default function QuizPage({ params }: { params: { chapterId: string } }) 
         <div className="flex items-center justify-between gap-3">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-text-secondary">Lecon</p>
-            <p className="mt-1 text-base font-semibold text-text-primary">{chapter?.title}</p>
+            <p className="mt-1 text-base font-semibold text-text-primary">{chapterTitle}</p>
           </div>
           <div className="text-right">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-text-secondary">XP session</p>
@@ -218,10 +219,10 @@ export default function QuizPage({ params }: { params: { chapterId: string } }) 
           <div className="flex items-start justify-between gap-4">
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-text-secondary">Question</p>
-              <h1 className="mt-2 text-2xl font-bold leading-tight text-text-primary">{currentQuiz.question}</h1>
+              <h1 className="mt-2 text-2xl font-bold leading-tight text-text-primary">{toDisplayText(currentQuiz.question)}</h1>
             </div>
             <button
-              onClick={() => speak(currentQuiz.question)}
+              onClick={() => speak(toDisplayText(currentQuiz.question))}
               className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-border bg-bg text-text-secondary"
             >
               <Volume2 size={18} />
@@ -299,12 +300,12 @@ export default function QuizPage({ params }: { params: { chapterId: string } }) 
                             />
                           </div>
                           <div className="px-3 py-3 text-center">
-                            <p className="text-sm font-semibold text-text-primary">{option.text}</p>
+                            <p className="text-sm font-semibold text-text-primary">{toDisplayText(option.text)}</p>
                           </div>
                         </div>
                       ) : optionAsset ? (
                         <div className="rounded-2xl border border-dashed border-border bg-white px-3 py-6 text-center">
-                          <p className="text-sm font-semibold text-text-primary">{option.text ?? optionAsset.alt}</p>
+                          <p className="text-sm font-semibold text-text-primary">{toDisplayText(option.text) || optionAsset.alt}</p>
                           <p className="mt-1 text-xs text-text-secondary">Image reelle en attente</p>
                           {optionAsset.debugPath && (
                             <p className="mt-1 text-xs text-text-disabled">{optionAsset.debugPath}</p>
@@ -330,7 +331,7 @@ export default function QuizPage({ params }: { params: { chapterId: string } }) 
                       <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white text-sm font-semibold text-text-primary">
                         {index + 1}
                       </div>
-                      <p className="flex-1 text-sm font-semibold text-text-primary">{option.text}</p>
+                      <p className="flex-1 text-sm font-semibold text-text-primary">{toDisplayText(option.text)}</p>
                       {feedback === 'idle' && (
                         <div className="flex gap-2">
                           <button
@@ -376,13 +377,13 @@ export default function QuizPage({ params }: { params: { chapterId: string } }) 
                 {feedback === 'correct' ? <CheckCircle2 size={20} /> : <XCircle size={20} />}
                 <div>
                   <p className="font-semibold">{feedback === 'correct' ? 'Bonne reponse' : 'Mauvaise reponse'}</p>
-                  <p className="mt-1 text-sm leading-6">{currentQuiz.explanation}</p>
+                  <p className="mt-1 text-sm leading-6">{toDisplayText(currentQuiz.explanation)}</p>
                 </div>
               </div>
             </div>
             <div className="grid grid-cols-2 gap-3">
               <button
-                onClick={() => speak(currentQuiz.explanation)}
+                onClick={() => speak(toDisplayText(currentQuiz.explanation))}
                 className="rounded-2xl border border-border px-4 py-4 text-sm font-semibold text-text-primary"
               >
                 Ecouter l'explication
@@ -413,7 +414,7 @@ export default function QuizPage({ params }: { params: { chapterId: string } }) 
           getOptionCardClass({ selected, correct, showState })
         }`}
       >
-        {option.text}
+        {toDisplayText(option.text)}
       </button>
     )
   }
@@ -433,13 +434,28 @@ export default function QuizPage({ params }: { params: { chapterId: string } }) 
       >
         {option.label && (
           <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white text-sm font-semibold text-text-primary">
-            {option.label}
+            {toDisplayText(option.label)}
           </div>
         )}
-        <span className="flex-1 text-sm font-semibold text-text-primary">{option.text}</span>
+        <span className="flex-1 text-sm font-semibold text-text-primary">{toDisplayText(option.text)}</span>
       </button>
     )
   }
+}
+
+function toDisplayText(value: unknown): string {
+  if (typeof value === 'string' || typeof value === 'number') return String(value)
+  if (Array.isArray(value)) {
+    return value
+      .map(item => toDisplayText(item))
+      .filter(Boolean)
+      .join(' ')
+  }
+  if (value && typeof value === 'object') {
+    if ('text' in value && typeof value.text === 'string') return value.text
+    if ('label' in value && typeof value.label === 'string') return value.label
+  }
+  return ''
 }
 
 function getOptionCardClass({
