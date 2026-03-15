@@ -1,18 +1,18 @@
 'use client'
 
 import Image from 'next/image'
-import { use, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { ArrowLeft, CheckCircle2, ChevronDown, ChevronUp, RotateCcw, Volume2, XCircle } from 'lucide-react'
 import { CHAPTERS, getChapterQuizzes, shuffleArray } from '@/lib/quiz-data'
-import { getQuizPhotoAsset } from '@/lib/media-assets'
+import { resolveQuizAsset } from '@/lib/media-assets'
 import { QuizOption, QuizQuestion } from '@/lib/types'
 import { speak, stopSpeech } from '@/lib/audio'
 
 type FeedbackState = 'idle' | 'correct' | 'incorrect'
 
-export default function QuizPage({ params }: { params: Promise<{ chapterId: string }> }) {
-  const { chapterId } = use(params)
+export default function QuizPage({ params }: { params: { chapterId: string } }) {
+  const { chapterId } = params
   const router = useRouter()
   const chapterIdNum = Number(chapterId)
   const chapter = CHAPTERS.find(item => item.id === chapterIdNum)
@@ -34,6 +34,7 @@ export default function QuizPage({ params }: { params: Promise<{ chapterId: stri
   }, [chapter?.quiz_count, chapterIdNum])
 
   const currentQuiz = quizzes[currentIdx]
+  const questionAsset = resolveQuizAsset(currentQuiz?.image_key, currentQuiz?.question)
   const progress = quizzes.length > 0 ? ((currentIdx + (feedback !== 'idle' ? 1 : 0)) / quizzes.length) * 100 : 0
 
   useEffect(() => {
@@ -233,12 +234,12 @@ export default function QuizPage({ params }: { params: Promise<{ chapterId: stri
             </div>
           )}
 
-          {currentQuiz.image_key && (
+          {questionAsset && (
             <div className="mt-5 rounded-[24px] border border-dashed border-border bg-bg p-5">
-              {getQuizPhotoAsset(currentQuiz.image_key) ? (
+              {!questionAsset.isMissing && questionAsset.src ? (
                 <div className="relative min-h-40 overflow-hidden rounded-[20px] border border-border bg-white">
                   <Image
-                    src={getQuizPhotoAsset(currentQuiz.image_key)!}
+                    src={questionAsset.src}
                     alt={currentQuiz.question}
                     fill
                     className="object-cover"
@@ -247,8 +248,11 @@ export default function QuizPage({ params }: { params: Promise<{ chapterId: stri
               ) : (
                 <div className="flex min-h-40 items-center justify-center rounded-[20px] border border-border bg-white">
                   <div className="text-center">
-                    <p className="text-sm font-semibold text-text-primary">Image en attente</p>
-                    <p className="mt-1 text-xs text-text-secondary">assets/{currentQuiz.image_key}.jpg</p>
+                    <p className="text-sm font-semibold text-text-primary">{questionAsset.alt}</p>
+                    <p className="mt-1 text-xs text-text-secondary">Image reelle en attente</p>
+                    {questionAsset.debugPath && (
+                      <p className="mt-1 text-xs text-text-disabled">{questionAsset.debugPath}</p>
+                    )}
                   </div>
                 </div>
               )}
@@ -274,6 +278,7 @@ export default function QuizPage({ params }: { params: Promise<{ chapterId: stri
                   const selected = selectedIds.includes(option.id)
                   const correct = currentQuiz.correct_ids.includes(option.id)
                   const showState = feedback !== 'idle'
+                  const optionAsset = resolveQuizAsset(option.image_key, option.text)
                   return (
                     <button
                       key={option.id}
@@ -283,12 +288,12 @@ export default function QuizPage({ params }: { params: Promise<{ chapterId: stri
                         getOptionCardClass({ selected, correct, showState })
                       }`}
                     >
-                      {getQuizPhotoAsset(option.image_key) ? (
+                      {optionAsset && !optionAsset.isMissing && optionAsset.src ? (
                         <div className="overflow-hidden rounded-2xl border border-border bg-white">
                           <div className="relative h-28">
                             <Image
-                              src={getQuizPhotoAsset(option.image_key)!}
-                              alt={option.text ?? 'Quiz option'}
+                              src={optionAsset.src}
+                              alt={optionAsset.alt}
                               fill
                               className="object-cover"
                             />
@@ -297,12 +302,15 @@ export default function QuizPage({ params }: { params: Promise<{ chapterId: stri
                             <p className="text-sm font-semibold text-text-primary">{option.text}</p>
                           </div>
                         </div>
-                      ) : (
+                      ) : optionAsset ? (
                         <div className="rounded-2xl border border-dashed border-border bg-white px-3 py-6 text-center">
-                          <p className="text-sm font-semibold text-text-primary">{option.text}</p>
-                          <p className="mt-1 text-xs text-text-secondary">assets/{option.image_key}.jpg</p>
+                          <p className="text-sm font-semibold text-text-primary">{option.text ?? optionAsset.alt}</p>
+                          <p className="mt-1 text-xs text-text-secondary">Image reelle en attente</p>
+                          {optionAsset.debugPath && (
+                            <p className="mt-1 text-xs text-text-disabled">{optionAsset.debugPath}</p>
+                          )}
                         </div>
-                      )}
+                      ) : null}
                     </button>
                   )
                 })}

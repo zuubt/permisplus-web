@@ -1,6 +1,6 @@
 'use client'
 
-import { Suspense, use, useEffect, useState } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { ArrowRight, Coins, Sparkles } from 'lucide-react'
 import { CHAPTERS } from '@/lib/quiz-data'
@@ -83,8 +83,8 @@ function CompleteContent({ chapterId }: { chapterId: string }) {
   )
 }
 
-export default function CompletePage({ params }: { params: Promise<{ chapterId: string }> }) {
-  const { chapterId } = use(params)
+export default function CompletePage({ params }: { params: { chapterId: string } }) {
+  const { chapterId } = params
 
   return (
     <Suspense
