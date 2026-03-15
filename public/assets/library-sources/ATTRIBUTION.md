@@ -58,6 +58,50 @@ All files below were pulled from Wikimedia Commons file endpoints. Verify the ex
   - Source page: [A first aid kit](https://commons.wikimedia.org/wiki/File:A-first-aid-kit.jpg)
   - Direct file endpoint: `https://commons.wikimedia.org/wiki/Special:FilePath/A-first-aid-kit.jpg`
 
+- `bicycle-handlebar.jpg`
+  - Source page: [Mountain bike handlebar](https://commons.wikimedia.org/wiki/File:Mountain_bike_handlebar.JPG)
+  - Direct file endpoint: `https://commons.wikimedia.org/wiki/Special:FilePath/Mountain_bike_handlebar.JPG`
+
+- `fire-extinguisher.jpg`
+  - Source page: [Fire Extinguisher Service](https://commons.wikimedia.org/wiki/File:Fire_Extinguisher_Service.jpg)
+  - Direct file endpoint: `https://commons.wikimedia.org/wiki/Special:FilePath/Fire_Extinguisher_Service.jpg`
+
+- `hazard-pedestrian.jpg`
+  - Source page: [Pedestrian crossing street](https://commons.wikimedia.org/wiki/File:Pedestrian_crossing_street.jpg)
+  - Direct file endpoint: `https://commons.wikimedia.org/wiki/Special:FilePath/Pedestrian_crossing_street.jpg`
+
+- `laptop.jpg`
+  - Source page: [Notebook computer](https://commons.wikimedia.org/wiki/File:Notebook_computer.jpg)
+  - Direct file endpoint: `https://commons.wikimedia.org/wiki/Special:FilePath/Notebook_computer.jpg`
+
+- `phone.jpg`
+  - Source page: [Android Smartphone](https://commons.wikimedia.org/wiki/File:Android_Smartphone.jpg)
+  - Direct file endpoint: `https://commons.wikimedia.org/wiki/Special:FilePath/Android_Smartphone.jpg`
+
+- `sign-give-way.svg`
+  - Source page: [Give Way sign](https://commons.wikimedia.org/wiki/File:Give-Way-sign.svg)
+  - Direct file endpoint: `https://commons.wikimedia.org/wiki/Special:FilePath/Give-Way-sign.svg`
+
+- `sign-no-entry.svg`
+  - Source page: [Do not enter](https://commons.wikimedia.org/wiki/File:Do-not-enter.svg)
+  - Direct file endpoint: `https://commons.wikimedia.org/wiki/Special:FilePath/Do-not-enter.svg`
+
+- `sign-no-overtaking.svg`
+  - Source page: [Brunei road sign - No Overtaking](https://commons.wikimedia.org/wiki/File:Brunei_road_sign_-_No_Overtaking.svg)
+  - Direct file endpoint: `https://commons.wikimedia.org/wiki/Special:FilePath/Brunei_road_sign_-_No_Overtaking.svg`
+
+- `sign-pedestrian-crossing.svg`
+  - Source page: [Pedestrian crosswalk sign](https://commons.wikimedia.org/wiki/File:Pedestrian-crosswalk-sign.svg)
+  - Direct file endpoint: `https://commons.wikimedia.org/wiki/Special:FilePath/Pedestrian-crosswalk-sign.svg`
+
+- `sign-speed-50.svg`
+  - Source page: [Speed limit 50](https://commons.wikimedia.org/wiki/File:Speedlimit50.svg)
+  - Direct file endpoint: `https://commons.wikimedia.org/wiki/Special:FilePath/Speedlimit50.svg`
+
+- `sign-stop.svg`
+  - Source page: [Stop Sign](https://commons.wikimedia.org/wiki/File:Stop_Sign.svg)
+  - Direct file endpoint: `https://commons.wikimedia.org/wiki/Special:FilePath/Stop_Sign.svg`
+
 ## Notes
 
 - The current quiz engine uses directly matched assets only.

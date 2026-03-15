@@ -14,20 +14,38 @@ export default function LearnPage() {
   const [user, setUser] = useState<User | null>(null)
   const [progress, setProgress] = useState<Record<number, ChapterProgress>>({})
   const [muted, setMuted] = useState(false)
+  const [isBootstrapping, setIsBootstrapping] = useState(true)
 
   useEffect(() => {
     const currentUser = getUser()
     if (!currentUser) {
       router.replace('/onboarding')
+      setIsBootstrapping(false)
       return
     }
     const { user: refreshedUser } = checkAndUpdateStreak()
     setUser(refreshedUser)
     setProgress(getAllChapterProgress())
     setMuted(isMuted())
+    setIsBootstrapping(false)
   }, [router])
 
-  if (!user) return null
+  if (isBootstrapping || !user) {
+    return (
+      <div className="min-h-screen px-5 pb-8 pt-8">
+        <div className="surface-card rounded-[28px] p-5">
+          <p className="text-sm font-semibold text-text-secondary">Chargement</p>
+          <h1 className="mt-2 text-2xl font-bold text-text-primary">Preparation de votre parcours</h1>
+          <div className="mt-5 h-2 overflow-hidden rounded-full bg-border">
+            <div className="h-full w-1/2 animate-pulse rounded-full bg-primary" />
+          </div>
+          <p className="mt-4 text-sm leading-6 text-text-secondary">
+            Nous recuperons votre progression et vos chapitres.
+          </p>
+        </div>
+      </div>
+    )
+  }
 
   const xp = getXpProgress(user)
 

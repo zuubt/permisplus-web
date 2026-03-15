@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="606mm"
+   height="606mm"
+   viewBox="0 0 606 605.99998"
+   version="1.1"
+   id="svg823"
+   inkscape:version="0.92.4 (5da689c313, 2019-01-14)"
+   sodipodi:docname="Brunei_road_sign_-_No_Horn.svg">
+  <defs
+     id="defs817" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.25"
+     inkscape:cx="1273.3258"
+     inkscape:cy="783.21766"
+     inkscape:document-units="mm"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1920"
+     inkscape:window-height="1057"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:snap-global="true" />
+  <metadata
+     id="metadata820">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(0,309)">
+    <rect
+       style="opacity:1;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.0664286;stroke-linecap:square;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1;paint-order:stroke fill markers"
+       id="rect1368"
+       width="604"
+       height="604"
+       x="1"
+       y="-308"
+       rx="52"
+       ry="52" />
+    <rect
+       ry="50"
+       rx="50"
+       y="-306"
+       x="3"
+       height="600"
+       width="600"
+       id="rect1370"
+       style="opacity:1;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.06598867;stroke-linecap:square;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1;paint-order:stroke fill markers" />
+    <circle
+       style="opacity:1;fill:#c8141e;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.07791566;stroke-linecap:square;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1;paint-order:stroke fill markers"
+       id="path814"
+       cx="303"
+       cy="-6.000061"
+       r="280" />
+    <circle
+       r="220"
+       cy="-6.000061"
+       cx="303"
+       id="circle816"
+       style="opacity:1;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.06121945;stroke-linecap:square;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1;paint-order:stroke fill markers" />
+    <path
+       style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:9.02382469"
+       d="m 155.56067,-91.000308 c -14.25753,0 -16.45326,8.47185 -16.45326,8.47185 l -23.55464,73.7851504 c -2.4664,32.2643696 4.12017,49.1897696 4.12017,49.1897696 v 5.19089 26.52344 c 0,7.63371 4.10155,6.81355 4.10155,6.81355 h 6.01772 c 4.41901,0 3.83078,-19.66494 3.83078,-19.66494 0,0 -0.26079,-3.28973 3.84938,-3.28973 h 115.05447 c 4.11017,0 3.84938,3.28973 3.84938,3.28973 0,0 -0.58823,19.66494 3.83077,19.66494 h 6.01772 c 0,0 4.10156,0.82016 4.10156,-6.81355 v -26.52344 -5.19089 c 0,0 6.58656,-16.9254 4.12016,-49.1897696 L 250.8918,-82.528458 c 0,0 -2.19574,-8.47185 -16.45326,-8.47185 z m -7.16081,13.40022 h 93.2 l 14.79961,41.80004 H 133.59973 Z"
+       id="path11092"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="sccccscscsscscsccccssccccc" />
+    <path
+       sodipodi:nodetypes="sccccscscsscscsccccssccccc"
+       inkscape:connector-curvature="0"
+       id="path11111"
+       d="m 450.43933,-91.000308 c 14.25753,0 16.45326,8.47185 16.45326,8.47185 l 23.55464,73.7851504 c 2.4664,32.2643696 -4.12017,49.1897696 -4.12017,49.1897696 v 5.19089 26.52344 c 0,7.63371 -4.10155,6.81355 -4.10155,6.81355 h -6.01772 c -4.41901,0 -3.83078,-19.66494 -3.83078,-19.66494 0,0 0.26079,-3.28973 -3.84938,-3.28973 H 353.47316 c -4.11017,0 -3.84938,3.28973 -3.84938,3.28973 0,0 0.58823,19.66494 -3.83077,19.66494 h -6.01772 c 0,0 -4.10156,0.82016 -4.10156,-6.81355 v -26.52344 -5.19089 c 0,0 -6.58656,-16.9254 -4.12016,-49.1897696 L 355.1082,-82.528458 c 0,0 2.19574,-8.47185 16.45326,-8.47185 z m 7.16081,13.40022 h -93.2 l -14.79961,41.80004 h 122.79974 z"
+       style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:9.02382469" />
+    <rect
+       transform="rotate(45)"
+       y="-483.99591"
+       x="180.01106"
+       height="531"
+       width="60"
+       id="rect11122"
+       style="opacity:1;fill:#c8141e;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.97395921;stroke-linecap:square;stroke-linejoin:round;stroke-miterlimit:1.41400003;stroke-dasharray:none;stroke-opacity:1;paint-order:stroke fill markers" />
+  </g>
+</svg>
